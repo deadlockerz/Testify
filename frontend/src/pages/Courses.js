@@ -1,7 +1,14 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom"; // Import Link from react-router-dom
-import CourseCard from "../components/CourseCard";
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  CardFooter,
+  Typography,
+  Button,
+} from "@material-tailwind/react"; // Ensure you have the correct imports
 import SearchBar from "../components/SearchBar";
 
 const Courses = () => {
@@ -39,27 +46,28 @@ const Courses = () => {
   return (
     <div>
       <SearchBar courses={courses} setFilteredCourses={setFilteredCourses} />
-      <div className="flex flex-wrap justify-center mt-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 justify-center mt-8">
         {filteredCourses.map((item) => (
-          <div
-            key={item.id}
-            className="max-w-sm w-full sm:max-w-xs md:max-w-md lg:max-w-lg xl:max-w-xl mx-2 my-4 cursor-pointer"
-          >
+          <Card key={item._id} className="w-full max-w-xs mx-auto">
             <Link to={`/course/${item._id}`}>
-              {/* Wrap CourseCard with Link component */}
-              <CourseCard
-                img={`${baseUrl}/${item.img}`} // Concatenate base URL with image path
-                courseName={item.course_name}
-                courseDisc={item.course_disc}
-                author={{
-                  name: "Jonathan Reinink",
-                  avatar: `${baseUrl}/assets/CourseImg/jonathan.jpg`,
-                }}
-                date="Aug 18"
-                addToCart={() => addtocart(item._id)}
-              />
+              <CardHeader color="blue-gray" className="relative h-56">
+                <img
+                  src={`${item.img}`}
+                  alt="card-image"
+                  className="object-cover w-full h-full"
+                />
+              </CardHeader>
+              <CardBody>
+                <Typography variant="h5" color="blue-gray" className="mb-2">
+                  {item.course_name}
+                </Typography>
+                <Typography>{item.course_disc}</Typography>
+              </CardBody>
             </Link>
-          </div>
+            <CardFooter className="pt-0">
+              <Button onClick={() => addtocart(item._id)}>Add to Cart</Button>
+            </CardFooter>
+          </Card>
         ))}
       </div>
     </div>

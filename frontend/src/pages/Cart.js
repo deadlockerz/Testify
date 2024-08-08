@@ -127,12 +127,12 @@ const Cart = () => {
                   </p>
                   <div className="flex items-center space-x-4">
                     <h6 className="font-manrope font-medium text-2xl leading-9 text-indigo-500">
-                      {cartItems.reduce(
+                      Total Price: ${cartItems.reduce(
                         (total, item) =>
                           total + (item.courseId?.course_price || 0),
                         0
-                      )}{" "}
-                      {/* Added null check */}
+                      )}{" "} 
+                      {/*Added null check */}
                     </h6>
                   </div>
                 </div>
