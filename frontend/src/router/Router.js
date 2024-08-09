@@ -11,6 +11,7 @@ import Cart from "../pages/Cart";
 import NotFound from "../components/NotFound";
 import Error from "../components/Error";
 import AdminHome from "../admin/AdminHome";
+import AdminPractice from "../admin/AdminPractice";
 import UpdateCourse from "../admin/UpdateCourse";
 import CardPayment from "../pages/CardPayment";
 import UpiPayment from "../pages/UpiPayment";
@@ -45,6 +46,7 @@ const Router = () => {
         { path: "/practice", element: <Practice /> },
         { path: "/cart", element: <Cart /> },
         { path: "/admin", element: <AdminHome /> },
+        { path: "/adminpractice", element: <AdminPractice /> },
         { path: "/updatecourse/:id", element: <UpdateCourse /> },
         { path: "/credit-card-payment", element: <CardPayment /> },
         { path: "/upi-payment", element: <UpiPayment /> },

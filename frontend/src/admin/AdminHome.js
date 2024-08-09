@@ -6,7 +6,7 @@ const AdminHome = () => {
   const [courses, setCourses] = useState([]);
   const [inputCourse, setInputCourse] = useState({});
 
-  const handlechange = (event) => {
+  const handleChange = (event) => {
     setInputCourse({
       ...inputCourse,
       [event.target.name]: event.target.value,
@@ -16,10 +16,7 @@ const AdminHome = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(
-        "http://localhost:3030/add-course",
-        inputCourse
-      );
+      const res = await axios.post("http://localhost:3030/add-course", inputCourse);
       console.log(res);
       fetchAllCourses();
       setInputCourse({});
@@ -39,9 +36,7 @@ const AdminHome = () => {
 
   const handleDelete = async (id) => {
     try {
-      const res = await axios.delete(
-        `http://localhost:3030/deletecourse/${id}`
-      );
+      const res = await axios.delete(`http://localhost:3030/deletecourse/${id}`);
       if (res.status === 200) {
         fetchAllCourses();
       }
@@ -67,7 +62,7 @@ const AdminHome = () => {
             placeholder="Enter image link"
             required
             value={inputCourse.img || ""}
-            onChange={handlechange}
+            onChange={handleChange}
           />
         </div>
         <div className="mb-4">
@@ -79,7 +74,7 @@ const AdminHome = () => {
             placeholder="Enter course name"
             required
             value={inputCourse.course_name || ""}
-            onChange={handlechange}
+            onChange={handleChange}
           />
         </div>
         <div className="mb-4">
@@ -91,7 +86,7 @@ const AdminHome = () => {
             placeholder="Enter course description"
             required
             value={inputCourse.course_disc || ""}
-            onChange={handlechange}
+            onChange={handleChange}
           />
         </div>
         <div className="mb-4">
@@ -103,7 +98,7 @@ const AdminHome = () => {
             placeholder="Enter price"
             required
             value={inputCourse.course_price || ""}
-            onChange={handlechange}
+            onChange={handleChange}
           />
         </div>
         <div className="flex justify-center mb-4">
@@ -119,6 +114,6 @@ const AdminHome = () => {
       <ProductTable courses={courses} handleDelete={handleDelete} />
     </div>
   );
-};
+}; 
 
 export default AdminHome;
