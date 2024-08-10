@@ -11,7 +11,7 @@ const CourseDetail = () => {
     const fetchCourseDetail = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3030/course-detail/${courseId}`
+          `http://localhost:3030/course/course-detail/${courseId}`
         );
         setCourseDetail(response.data);
       } catch (error) {

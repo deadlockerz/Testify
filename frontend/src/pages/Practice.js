@@ -15,7 +15,7 @@ const Practice = () => {
 
   const fetchAllproblems = async () => {
     try {
-      const res = await axios.get("http://localhost:3030/readallproblems");
+      const res = await axios.get("http://localhost:3030/practice/readallproblems");
       setProblem(res.data);
       setFilteredProblem(res.data); // Initially, set filtered courses to all courses
     } catch (error) {

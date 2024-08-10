@@ -1,15 +1,13 @@
 const mongoose = require("mongoose");
 
 const practiceSchema = new mongoose.Schema({
-//   id: Number,
-  problem_number: Number,
-  problem_link: String,
-  problem_name: String,
-  platform: String,
-  status: String,
-  difficulty: String
+  problem_number: { type: Number, required: true },
+  problem_link: { type: String, required: true },
+  problem_name: { type: String, required: true },
+  platform: { type: String, required: true },
+  status: { type: String, required: true },
+  difficulty: { type: String, required: true },
 });
 
-const practice = mongoose.model("practice", practiceSchema);
-
-module.exports = practice;
+const Practice = mongoose.model("Practice", practiceSchema);
+module.exports = Practice;

@@ -1,5 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+// import { useState, useEffect, useRef } from 'react';
+import React, { Fragment, useState, useEffect, useRef  } from "react";
+import { Link } from "react-router-dom";
+import { googleLogout } from "@react-oauth/google";
+import Cookies from "js-cookie"
 const { logo } = require('../utils/constant');
 
 const Header = () => {
@@ -24,6 +27,16 @@ const Header = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  const userName = (Cookies.get("userName"));;
+  // const userName = decodeURIComponent(Cookies.get("userName"));;
+ 
+  const logout = () => {
+    Cookies.remove("userName");
+    Cookies.remove("userId");
+    Cookies.remove("userEmail");
+    window.location = "/login";
+  };
 
   return (
     <header className='sticky top-0 bg-white bg-opacity-80 z-50 select-none'>
@@ -99,7 +112,7 @@ const Header = () => {
                   </Link>
                 </li>
                 {/* Render Login and SignUp links conditionally */}
-                {mobileMenuOpen && window.innerWidth <= 640 && (
+                {/* {mobileMenuOpen && window.innerWidth <= 640 && (
                   <>
                     <li onClick={() => setMobileMenuOpen(false)}>
                       <Link
@@ -118,12 +131,38 @@ const Header = () => {
                       </Link>
                     </li>
                   </>
-                )}
+                )} */}
               </ul>
             </nav>
           </div>
           <div className='flex justify-end'>
+          {userName ? (
+            <Fragment>
             <div className='hidden justify-end pr-16 sm:flex lg:pr-0 '>
+            
+            <button
+                      onClick={() => {
+                        logout();
+                        googleLogout();
+                      }}
+                      class='px-7 py-2 text-base font-medium text-dark hover:text-primary dark:text-black'
+                    >
+                      Log out
+                    </button>
+                    
+                    <Link
+                      // to={`/profile/${userId}`}
+                      to={`/profile`}
+                      class='px-7 py-2 text-base font-medium text-dark hover:text-primary dark:text-black'
+                    >
+                      {userName}
+                    </Link>
+                  
+            </div>
+            </Fragment>
+              ) : (
+                <Fragment>
+                <div className='hidden justify-end pr-16 sm:flex lg:pr-0 '>
               <Link
                 to='/login'
                 className='px-7 py-2 text-base font-medium text-dark hover:text-primary dark:text-black'
@@ -138,6 +177,7 @@ const Header = () => {
                 SignUp
               </Link>
             </div>
+            </Fragment>)}
           </div>
         </div>
       </div>

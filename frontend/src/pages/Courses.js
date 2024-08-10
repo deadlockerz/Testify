@@ -21,7 +21,7 @@ const Courses = () => {
 
   const fetchAllCourses = async () => {
     try {
-      const res = await axios.get("http://localhost:3030/readallcourses");
+      const res = await axios.get("http://localhost:3030/courses/readallcourses");
       setCourses(res.data);
       setFilteredCourses(res.data); // Initially, set filtered courses to all courses
     } catch (error) {
@@ -29,10 +29,10 @@ const Courses = () => {
     }
   };
 
-  // add to cart
+  // Add to cart function
   const addtocart = async (courseId) => {
     try {
-      const res = await axios.post(`http://localhost:3030/cart/${courseId}`);
+      const res = await axios.post(`http://localhost:3030/cart/cart/${courseId}`);
       if (res.status === 201) {
         alert("Course added to cart");
       }
@@ -40,6 +40,7 @@ const Courses = () => {
       console.error("An error occurred:", e);
     }
   };
+
   // Base URL for assets
   const baseUrl = "http://localhost:3030";
 
@@ -51,6 +52,11 @@ const Courses = () => {
           <Card key={item._id} className="w-full max-w-xs mx-auto">
             <Link to={`/course/${item._id}`}>
               <CardHeader color="blue-gray" className="relative h-56">
+                {/* <img
+                  src={`${baseUrl}/assets/${item.img}`} // Use baseUrl to form the correct image path
+                  alt="card-image"
+                  className="object-cover w-full h-full"
+                /> */}
                 <img
                   src={`${item.img}`}
                   alt="card-image"
@@ -65,7 +71,14 @@ const Courses = () => {
               </CardBody>
             </Link>
             <CardFooter className="pt-0">
-              <Button onClick={() => addtocart(item._id)}>Add to Cart</Button>
+              {/* Simplified button for debugging */}
+              <button
+                onClick={() => addtocart(item._id)}
+                className="bg-blue-500 text-white px-4 py-2 rounded"
+              >
+                Add to Cart
+              </button>
+              {/* <Button color="blue" onClick={() => addtocart(item._id)}> Add to Cart </Button> */}
             </CardFooter>
           </Card>
         ))}

@@ -10,7 +10,7 @@ const Cart = () => {
 
   const cartItem = async () => {
     try {
-      const res = await axios.get("http://localhost:3030/showcartitem");
+      const res = await axios.get("http://localhost:3030/cart/showcartitem");
       return res.data;
     } catch (err) {
       console.log(err);
@@ -21,11 +21,11 @@ const Cart = () => {
   const handleRemoveFromCart = async (id) => {
     try {
       const res = await axios.delete(
-        `http://localhost:3030/removefromcart/${id}`
+        `http://localhost:3030/cart/removefromcart/${id}`
       );
       if (res.status === 204) {
         // cartItem();
-        window.location = "/cart";
+        window.location ="/cart";
       }
     } catch (e) {
       console.log(e);
