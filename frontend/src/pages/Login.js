@@ -150,12 +150,12 @@ function LoginForm() {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex flex-col items-center">
-          {/* <GoogleLogin
+          <GoogleLogin
                     buttonText="Sign in with Google"
                     onSuccess={onSuccess}
-                  /> */}
+                  />
 
-          <button className="w-full max-w-xs font-bold shadow-sm rounded-lg py-3 bg-indigo-100 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline mt-5">
+          {/* <button className="w-full max-w-xs font-bold shadow-sm rounded-lg py-3 bg-indigo-100 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline mt-5">
             <div className="bg-white p-1 rounded-full">
               <svg className="w-6" viewBox="0 0 32 32">
                 <path
@@ -165,7 +165,7 @@ function LoginForm() {
               </svg>
             </div>
             <span className="ml-4">Log In with GitHub</span>
-          </button>
+          </button> */}
         </div>
 
         <div className="my-12 border-b text-center">
@@ -202,12 +202,12 @@ function LoginForm() {
                 Password
               </label>
               <div className="text-sm">
-                <a
-                  href="/"
+                <Link
+                  to='/forgot-password'
                   className="font-semibold text-indigo-600 hover:text-indigo-500"
                 >
                   Forgot password?
-                </a>
+                </Link>
               </div>
             </div>
             <div className="mt-1">
@@ -271,21 +271,7 @@ function LoginForm() {
             Create an Account
           </Link>
         </p>
-        {/* Sign in with icons
-        <div className="flex justify-center mt-6 space-x-4">
-          <a href="/" className="text-gray-500 hover:text-gray-700">
-            <FaGoogle className="w-6 h-6" />
-          </a>
-          <a href="/" className="text-gray-500 hover:text-gray-700">
-            <FaGithub className="w-6 h-6" />
-          </a>
-          <a href="/" className="text-gray-500 hover:text-gray-700">
-            <FaFacebook className="w-6 h-6" />
-          </a>
-          <a href="/" className="text-gray-500 hover:text-gray-700">
-            <FaLinkedin className="w-6 h-6" />
-          </a>
-        </div> */}
+        
       </div>
     </div>
   );

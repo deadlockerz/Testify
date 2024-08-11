@@ -147,7 +147,7 @@ const Cart = () => {
                       type="radio"
                       className="form-radio"
                       name="payment"
-                      value="credit_card"
+                      value="credit_card" 
                       onChange={handlePaymentOptionChange}
                     />
                     <span className="ml-2">Credit Card</span>
