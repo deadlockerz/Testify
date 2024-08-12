@@ -39,7 +39,7 @@ const Header = () => {
   };
 
   return (
-    <header className='sticky top-0 bg-white bg-opacity-80 z-50 select-none'>
+    <header className='sticky top-0 bg-white bg-opacity-80 pr-5 pl-5 z-50 select-none'>
       <div className='container mx-auto'>
         <div className='relative flex items-center justify-between'>
           <div className='flex items-center flex-row '>
@@ -111,6 +111,22 @@ const Header = () => {
                     Cart
                   </Link>
                 </li>
+              <li onClick={() => setMobileMenuOpen(false)}>
+                  <Link
+                    to='/cart'
+                    className='flex py-2 text-base font-medium text-body-color hover:text-dark dark:text-dark-6 dark:hover:text-black lg:ml-12 lg:inline-flex'
+                  >
+                    Doc
+                  </Link>
+                </li>
+              <li onClick={() => setMobileMenuOpen(false)}>
+                  <Link
+                    to='/cart'
+                    className='flex py-2 text-base font-medium text-body-color hover:text-dark dark:text-dark-6 dark:hover:text-black lg:ml-12 lg:inline-flex'
+                  >
+                    vlogs
+                  </Link>
+                </li>
                 {/* Render Login and SignUp links conditionally */}
                 {/* {mobileMenuOpen && window.innerWidth <= 640 && (
                   <>
@@ -151,12 +167,18 @@ const Header = () => {
                     </button>
                     
                     <Link
-                      // to={`/profile/${userId}`}
-                      to={`/profile`}
-                      class='px-7 py-2 text-base font-medium text-dark hover:text-primary dark:text-black'
-                    >
-                      {userName}
-                    </Link>
+  to={`/dashboard`} // Change the path if necessary
+  className="flex items-center space-x-2 px-4 py-2 text-base font-medium text-dark hover:text-primary dark:text-black"
+>
+  <img
+    src="https://funkylife.in/wp-content/uploads/2023/02/cute-girl-pic-71-819x1024.jpg"
+    alt="User Profile"
+    className="w-12 h-12 rounded-full object-cover mt-1"
+  />
+  {/* Optionally include user name or other text here */}
+  {/* <span className="hidden md:inline">{userName}</span> */}
+</Link>
+
                   
             </div>
             </Fragment>

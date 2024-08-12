@@ -1,3 +1,4 @@
+
 import Hero from "../components/Hero";
 import { createBrowserRouter , RouterProvider } from "react-router-dom";
 import LoginForm from "../pages/Login";
@@ -68,8 +69,9 @@ import App from "../App";
   ]);
   const AppWrapper = () => {
     return (
-     
+      <GoogleOAuthProvider clientId="658716736046-lrhfa8d733m376vdf0n8mqerpoct6o1v.apps.googleusercontent.com">
         <RouterProvider router={router} />
+      </GoogleOAuthProvider>
     );
   };
   
