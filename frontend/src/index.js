@@ -9,6 +9,5 @@ root.render(
   <React.StrictMode>
    
       <AppWrapper />  {/* Use AppWrapper directly here */}
-    
   </React.StrictMode>
 );
