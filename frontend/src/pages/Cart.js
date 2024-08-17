@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import {loadStripe} from '@stripe/stripe-js';
 import axios from "axios";
 
 const Cart = () => {
@@ -40,6 +41,8 @@ const Cart = () => {
     setSelectedPayment(e.target.value);
   };
 
+
+
   const handleContinueToPayment = () => {
     switch (selectedPayment) {
       case "credit_card":
@@ -59,6 +62,12 @@ const Cart = () => {
         break;
     }
   };
+
+//Stripe payment
+const makePayment = async () =>{
+  const stripe = await loadStripe('pk_test_TYooMQauvdEDq54NiTphI7jx');
+
+}
 
   return (
     <div classNameName="cart">
@@ -189,7 +198,8 @@ const Cart = () => {
 
           <div className="flex items-center flex-col sm:flex-row justify-center gap-3 mt-8">
             <button
-              onClick={handleContinueToPayment}
+              // onClick={handleContinueToPayment}
+              onClick={makePayment}
               className="rounded-full w-full max-w-[280px] py-4 text-center justify-center items-center bg-indigo-600 font-semibold text-lg text-white flex transition-all duration-500 hover:bg-indigo-700"
             >
               Continue to Payment

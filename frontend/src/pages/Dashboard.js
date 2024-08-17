@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { LineChart } from "@mui/x-charts/LineChart";
+import UpdateProfilePopup from './Profile';
+
 import {
   Card,
   CardBody,
@@ -8,32 +10,127 @@ import {
   Button,
 } from "@material-tailwind/react";
 import Chart from "react-apexcharts";
+import Cookies from "js-cookie";
+import axios from "axios";
 
-const chartConfig = {
-  type: "pie",
-  width: 280,
-  height: 280,
-  series: [44, 55, 13, 43, 22],
-  options: {
-    chart: {
-      toolbar: {
+const userId = Cookies.get("userId");
+
+const Dashboard = () => {
+  
+  // profile update
+  const [isPopupOpen, setPopupOpen] = useState(false);
+
+  const handleProfileClick = () => {
+    setPopupOpen(true);
+  };
+
+  const handleClosePopup = () => {
+    setPopupOpen(false);
+  };
+
+  
+
+
+
+
+
+
+  const [statistics, setStatistics] = useState(null);
+  const [total, settotal] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [chartConfig, setChartConfig] = useState({
+    type: "pie",
+    width: 280,
+    height: 280,
+    series: [17, 23, 12], // default values
+    options: {
+      chart: {
+        toolbar: {
+          show: false,
+        },
+      },
+      title: {
+        show: "",
+      },
+      dataLabels: {
+        enabled: false,
+      },
+      colors: ["#28a745", "#ffc107", "#dc3545"],
+      legend: {
         show: false,
       },
     },
-    title: {
-      show: "",
-    },
-    dataLabels: {
-      enabled: false,
-    },
-    colors: ["#020617", "#ff8f00", "#00897b", "#1e88e5", "#d81b60"],
-    legend: {
-      show: false,
-    },
-  },
+  });
+// dashboard pai chart data
+  useEffect(() => {  
+    fetchStatistics();
+    getProblemStatistics();
+  }, []);
+
+  const fetchStatistics = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3030/dashboard/statistics/${userId}`
+      );
+      const data = response.data;
+      setStatistics(data);
+
+      // Assuming data includes easy, medium, and hard counts
+      const { easy_count, medium_count, hard_count, daily_solved_count } =
+        data;
+
+      // Update the chartConfig with the new values
+      setChartConfig((prevConfig) => ({
+        ...prevConfig,
+        series: [easy_count, medium_count, hard_count],
+      }));
+    } catch (error) {
+      console.error("Error fetching statistics:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+// total problems
+const getProblemStatistics = async () => {
+  try {
+    const response = await axios.get(`http://localhost:3030/practice/statistics`);
+    const data = response.data;
+     settotal(data);
+    
+  } catch (error) {
+    console.error('Error fetching problem statistics:', error);
+    throw error;
+  }
 };
 
-const Dashboard = () => {
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!statistics) {
+    return <div>No statistics available</div>;
+  }
+
+  const { daily_solved_count } = statistics;
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
+  const seriesData = months.map((month) => daily_solved_count[month] || 0);
+
   return (
     <>
       <button
@@ -66,24 +163,13 @@ const Dashboard = () => {
 >
   <div className="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
     <ul className="space-y-2 font-medium">
-      {/* <li>
-        <a
-          href="#"
-          className="flex flex-col items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
-        >
-          <img
-            src="https://photosbull.com/wp-content/uploads/2024/05/1000060433.jpg"
-            alt="profile"
-            className="w-24 h-24 rounded-full object-cover"
-          />
-        </a>
-      </li> */}
       <div className="flex flex-col items-center justify-center">
   <div>
     <img
       src="https://photosbull.com/wp-content/uploads/2024/05/1000060433.jpg"
       alt="profile"
       className="w-24 h-24 rounded-full object-cover"
+      onClick={handleProfileClick}
     />
   </div>
 
@@ -173,11 +259,11 @@ const Dashboard = () => {
       </li>
     </ul>
   </div>
+  <UpdateProfilePopup isOpen={isPopupOpen} onClose={handleClosePopup} />
 </aside>
 
-
       <div className="p-4 sm:ml-64">
-        <div className=" p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700">
+        <div className="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700">
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div className="flex flex-col items-center">
               <Card>
@@ -187,56 +273,47 @@ const Dashboard = () => {
                   </div>
                 </CardBody>
                 <CardFooter className="flex justify-center">
-                  <div className="grid grid-cols-3 gap-1">
-                    <button className="bg-transparent hover:bg-green-700 text-green-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded mr-2 pr-10 pl-10">
-                      Easy
-                      <div className="text-blue-900 ">2/7</div>
-                    </button>
-                    <button className="bg-transparent hover:bg-yellow-400 text-yellow-400 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded pr-10 pl-10">
-                      Medium
-                      <div className="text-blue-900 ">2/7</div>
-                    </button>
-                    <button className="bg-transparent hover:bg-red-500 text-red-600 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded ml-2 pr-10 pl-10">
-                      Hard
-                      <div className="text-blue-900 ">2/7</div>
-                    </button>
-                  </div>
-                </CardFooter>
+                <div className="grid grid-cols-3 gap-1">
+                  <button className="bg-transparent hover:bg-green-700 text-green-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded mr-2 pr-10 pl-10">
+                    Easy
+                    <div className="text-blue-900 ">
+                      {statistics.easy_count}/{total ? total.easy : "Loading..."}
+                    </div>
+                  </button>
+                  <button className="bg-transparent hover:bg-yellow-400 text-yellow-400 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded pr-10 pl-10">
+                    Medium
+                    <div className="text-blue-900 ">
+                      {statistics.medium_count}/{total ? total.medium : "Loading..."}
+                    </div>
+                  </button>
+                  <button className="bg-transparent hover:bg-red-500 text-red-600 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded ml-2 pr-10 pl-10">
+                    Hard
+                    <div className="text-blue-900 ">
+                      {statistics.hard_count}/{total ? total.hard : "Loading..."}
+                    </div>
+                  </button>
+                </div>
+              </CardFooter>
+
               </Card>
             </div>
             <div className="flex flex-col items-center">
               <LineChart
                 xAxis={[
                   {
-                    data: [
-                      "Jan",
-                      "Feb",
-                      "Mar",
-                      "Apr",
-                      "May",
-                      "Jun",
-                      "Jul",
-                      "Aug",
-                      "Sep",
-                      "Oct",
-                      "Nov",
-                      "Dec",
-                    ],
+                    data: months,
                     scaleType: "band",
                   },
                 ]}
                 series={[
                   {
-                    data: [
-                      100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100,
-                      1200,
-                    ],
+                    data: seriesData,
                   },
                 ]}
                 height={300}
                 width={400}
               />
-              <h3 className=" mt-3 text-center">Daily prohress</h3>
+              <h3 className="mt-3 text-center">Daily Progress</h3>
             </div>
           </div>
         </div>

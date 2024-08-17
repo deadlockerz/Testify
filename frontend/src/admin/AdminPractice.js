@@ -18,7 +18,7 @@ const AdminPractice = () => {
     e.preventDefault();
     try {
       const res = await axios.post(
-        "http://localhost:3030/add-problem",
+        "http://localhost:3030/practice/add-problem",
         inputProblem
       );
       console.log(res);
@@ -31,7 +31,7 @@ const AdminPractice = () => {
 
   const fetchAllProblem = async () => {
     try {
-      const res = await axios.get("http://localhost:3030//readallproblems");
+      const res = await axios.get("http://localhost:3030/practice/readallproblems");
       setProblem(res.data);
     } catch (error) {
       console.error("Error fetching Problem:", error);
@@ -107,7 +107,7 @@ const AdminPractice = () => {
             onChange={handlechange}
           />
         </div>
-   <div className="mb-4">
+   {/* <div className="mb-4">
           <label className="text-sm text-gray-500">Status</label>
           <input
             type="text"
@@ -118,7 +118,7 @@ const AdminPractice = () => {
             value={inputProblem.status || ""}
             onChange={handlechange}
           />
-        </div>
+        </div> */}
    <div className="mb-4">
           <label className="text-sm text-gray-500">Difficulty</label>
           <input

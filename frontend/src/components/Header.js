@@ -1,9 +1,9 @@
 // import { useState, useEffect, useRef } from 'react';
-import React, { Fragment, useState, useEffect, useRef  } from "react";
+import React, { Fragment, useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { googleLogout } from "@react-oauth/google";
-import Cookies from "js-cookie"
-const { logo } = require('../utils/constant');
+import Cookies from "js-cookie";
+const { logo } = require("../utils/constant");
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -22,15 +22,15 @@ const Header = () => {
       }
     }
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
-  const userName = (Cookies.get("userName"));;
+  const userName = Cookies.get("userName");
   // const userName = decodeURIComponent(Cookies.get("userName"));;
- 
+
   const logout = () => {
     Cookies.remove("userName");
     Cookies.remove("userId");
@@ -39,26 +39,22 @@ const Header = () => {
   };
 
   return (
-    <header className='sticky top-0 bg-white bg-opacity-80 pr-5 pl-5 z-50 select-none'>
-      <div className='container mx-auto'>
-        <div className='relative flex items-center justify-between'>
-          <div className='flex items-center flex-row '>
+    <header className="sticky top-0 bg-white bg-opacity-80 pr-5 pl-5 z-50 select-none">
+      <div className="container mx-auto">
+        <div className="relative flex items-center justify-between">
+          <div className="flex items-center flex-row ">
             <Link
-              to='/'
-              className='flex w-auto  py-3' // Adjusted padding here
+              to="/"
+              className="flex w-auto  py-3" // Adjusted padding here
             >
-              <img
-                src={logo}
-                alt='Testify'
-                className='h-auto max-h-10 mr-4'
-              />
-              <div className='text-blue-500 text-2xl custom-font p-1'>
+              <img src={logo} alt="Testify" className="h-auto max-h-10 mr-4" />
+              <div className="text-blue-500 text-2xl custom-font p-1">
                 Testify
               </div>
             </Link>
           </div>
 
-          <div className='flex items-center justify-center'>
+          <div className="flex items-center justify-center">
             {/* Conditional rendering based on mobileMenuOpen state */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -67,62 +63,62 @@ const Header = () => {
             >
               <div
                 className={`h-2 w-6 flex items-center justify-between transition-transform ${
-                  mobileMenuOpen ? 'rotate-45 translate-y-1' : 'rotate-0'
+                  mobileMenuOpen ? "rotate-45 translate-y-1" : "rotate-0"
                 }`}
               >
-                <span className='h-[2px] w-6 bg-black transform origin-right'></span>
+                <span className="h-[2px] w-6 bg-black transform origin-right"></span>
               </div>
               <div
                 className={`h-2 w-6 flex items-center justify-between transition-transform ${
-                  mobileMenuOpen ? '-rotate-45 -translate-y-1' : 'rotate-0'
+                  mobileMenuOpen ? "-rotate-45 -translate-y-1" : "rotate-0"
                 }`}
               >
-                <span className='h-[2px] w-6 bg-black transform origin-right'></span>
+                <span className="h-[2px] w-6 bg-black transform origin-right"></span>
               </div>
             </button>
             <nav
               ref={menuRef}
               className={`absolute right-4 ali top-full w-full max-w-[250px] rounded-lg bg-white px-6 py-2 shadow -2 ${
-                mobileMenuOpen ? '' : 'hidden'
+                mobileMenuOpen ? "" : "hidden"
               } lg:static lg:block lg:w-full lg:max-w-full lg:shadow-none lg:dark:bg-transparent`}
             >
-              <ul className='block lg:flex'>
+              <ul className="block lg:flex">
                 <li onClick={() => setMobileMenuOpen(false)}>
                   <Link
-                    to='/courses'
-                    className='flex py-2 text-base font-medium text-body-color hover:text-dark dark:text-dark-6 dark:hover:text-black lg:ml-12 lg:inline-flex'
+                    to="/courses"
+                    className="flex py-2 text-base font-medium text-body-color hover:text-dark dark:text-dark-6 dark:hover:text-black lg:ml-12 lg:inline-flex"
                   >
                     Courses
                   </Link>
                 </li>
                 <li onClick={() => setMobileMenuOpen(false)}>
                   <Link
-                    to='/practice'
-                    className='flex py-2 text-base font-medium text-body-color hover:text-dark dark:text-dark-6 dark:hover:text-black lg:ml-12 lg:inline-flex'
+                    to="/practice"
+                    className="flex py-2 text-base font-medium text-body-color hover:text-dark dark:text-dark-6 dark:hover:text-black lg:ml-12 lg:inline-flex"
                   >
                     Practice
                   </Link>
                 </li>
                 <li onClick={() => setMobileMenuOpen(false)}>
                   <Link
-                    to='/cart'
-                    className='flex py-2 text-base font-medium text-body-color hover:text-dark dark:text-dark-6 dark:hover:text-black lg:ml-12 lg:inline-flex'
+                    to="/cart"
+                    className="flex py-2 text-base font-medium text-body-color hover:text-dark dark:text-dark-6 dark:hover:text-black lg:ml-12 lg:inline-flex"
                   >
                     Cart
                   </Link>
                 </li>
-              <li onClick={() => setMobileMenuOpen(false)}>
+                <li onClick={() => setMobileMenuOpen(false)}>
                   <Link
-                    to='/cart'
-                    className='flex py-2 text-base font-medium text-body-color hover:text-dark dark:text-dark-6 dark:hover:text-black lg:ml-12 lg:inline-flex'
+                    to="/cart"
+                    className="flex py-2 text-base font-medium text-body-color hover:text-dark dark:text-dark-6 dark:hover:text-black lg:ml-12 lg:inline-flex"
                   >
                     Doc
                   </Link>
                 </li>
-              <li onClick={() => setMobileMenuOpen(false)}>
+                <li onClick={() => setMobileMenuOpen(false)}>
                   <Link
-                    to='/cart'
-                    className='flex py-2 text-base font-medium text-body-color hover:text-dark dark:text-dark-6 dark:hover:text-black lg:ml-12 lg:inline-flex'
+                    to="/cart"
+                    className="flex py-2 text-base font-medium text-body-color hover:text-dark dark:text-dark-6 dark:hover:text-black lg:ml-12 lg:inline-flex"
                   >
                     vlogs
                   </Link>
@@ -151,55 +147,53 @@ const Header = () => {
               </ul>
             </nav>
           </div>
-          <div className='flex justify-end'>
-          {userName ? (
-            <Fragment>
-            <div className='hidden justify-end pr-16 sm:flex lg:pr-0 '>
-            
-            <button
-                      onClick={() => {
-                        logout();
-                        googleLogout();
-                      }}
-                      class='px-7 py-2 text-base font-medium text-dark hover:text-primary dark:text-black'
-                    >
-                      Log out
-                    </button>
-                    
-                    <Link
-  to={`/dashboard`} // Change the path if necessary
-  className="flex items-center space-x-2 px-4 py-2 text-base font-medium text-dark hover:text-primary dark:text-black"
->
-  <img
-    src="https://funkylife.in/wp-content/uploads/2023/02/cute-girl-pic-71-819x1024.jpg"
-    alt="User Profile"
-    className="w-12 h-12 rounded-full object-cover mt-1"
-  />
-  {/* Optionally include user name or other text here */}
-  {/* <span className="hidden md:inline">{userName}</span> */}
-</Link>
+          <div className="flex justify-end">
+            {userName ? (
+              <Fragment>
+                <div className="hidden justify-end pr-16 sm:flex lg:pr-0 ">
+                  <button
+                    onClick={() => {
+                      logout();
+                      googleLogout();
+                    }}
+                    class="px-7 py-2 text-base font-medium text-dark hover:text-primary dark:text-black"
+                  >
+                    Log out
+                  </button>
 
-                  
-            </div>
-            </Fragment>
-              ) : (
-                <Fragment>
-                <div className='hidden justify-end pr-16 sm:flex lg:pr-0 '>
-              <Link
-                to='/login'
-                className='px-7 py-2 text-base font-medium text-dark hover:text-primary dark:text-black'
-              >
-                Login
-              </Link>
+                  <Link
+                    to={`/dashboard`} // Change the path if necessary
+                    className="flex items-center space-x-2 px-4 py-2 text-base font-medium text-dark hover:text-primary dark:text-black"
+                  >
+                    <img
+                      src="https://funkylife.in/wp-content/uploads/2023/02/cute-girl-pic-71-819x1024.jpg"
+                      alt="User Profile"
+                      className="w-12 h-12 rounded-full object-cover mt-1"
+                    />
+                    {/* Optionally include user name or other text here */}
+                    {/* <span className="hidden md:inline">{userName}</span> */}
+                  </Link>
+                </div>
+              </Fragment>
+            ) : (
+              <Fragment>
+                <div className="hidden justify-end pr-16 sm:flex lg:pr-0 ">
+                  <Link
+                    to="/login"
+                    className="px-7 py-2 text-base font-medium text-dark hover:text-primary dark:text-black"
+                  >
+                    Login
+                  </Link>
 
-              <Link
-                to='/signup'
-                className='px-7 py-2 text-base font-medium text-dark hover:text-primary dark:text-black'
-              >
-                SignUp
-              </Link>
-            </div>
-            </Fragment>)}
+                  <Link
+                    to="/signup"
+                    className="px-7 py-2 text-base font-medium text-dark hover:text-primary dark:text-black"
+                  >
+                    SignUp
+                  </Link>
+                </div>
+              </Fragment>
+            )}
           </div>
         </div>
       </div>

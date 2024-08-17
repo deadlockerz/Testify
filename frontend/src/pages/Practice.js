@@ -1,89 +1,152 @@
 import { Link } from "react-router-dom";
 import React, { useEffect, useState } from "react";
+import Cookies from "js-cookie";
 import axios from "axios";
 
+const user_id = Cookies.get("userId");
 
 
 const Practice = () => {
-  const [Problem, setProblem] = useState([]);
+  const [problemStatus, setProblemStatus] = useState({});
   const [filteredProblem, setFilteredProblem] = useState([]);
-
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    fetchAllproblems();
+    fetchAllProblems();
   }, []);
 
-  const fetchAllproblems = async () => {
+  // Fetch all problems
+  const fetchAllProblems = async () => {
     try {
-      const res = await axios.get("http://localhost:3030/practice/readallproblems");
-      setProblem(res.data);
-      setFilteredProblem(res.data); // Initially, set filtered courses to all courses
+      const res = await axios.get("http://localhost:3030/practice/allProblems");
+      setFilteredProblem(res.data);
+      res.data.forEach((problem) => {
+        fetchProblemStatus(problem.problem_number);
+      });
     } catch (error) {
-      console.error("Error fetching courses:", error);
+      console.error("Error fetching problems:", error);
     }
   };
 
+  // Fetch the status of a specific problem for the current user
+  const fetchProblemStatus = async (problemNumber) => {
+    try {
+      const res = await axios.get(
+        `http://localhost:3030/dashboard/status/${user_id}/${problemNumber}`
+      );
+      setProblemStatus((prevStatus) => ({
+        ...prevStatus,
+        [problemNumber]: res.data.status || "unsolved",
+      }));
+    } catch (error) {
+      console.error("Error fetching problem status:", error);
+    }
+  };
+
+  // Update problem status
+  const updateProblemStatus = async (problemNumber) => {
+    try {
+      const currentStatus = problemStatus[problemNumber] === "solved" ? "unsolved" : "solved";
+
+      await axios.post("http://localhost:3030/dashboard/updateProblemStatus", {
+        user_id,
+        problem_number: problemNumber,
+        status: currentStatus,
+      });
+
+      setProblemStatus((prevStatus) => ({
+        ...prevStatus,
+        [problemNumber]: currentStatus,
+      }));
+    } catch (error) {
+      console.error("Error updating problem status:", error);
+    }
+  };
+
+  // Handle search input change
+  const handleSearchChange = (event) => {
+    const value = event.target.value.toLowerCase();
+    setSearchTerm(value);
+
+    // Filter problems by name based on search term
+    const filtered = filteredProblem.filter((problem) =>
+      problem.problem_name.toLowerCase().includes(value)
+    );
+    setFilteredProblem(filtered);
+  };
 
   return (
-    <div className="bg-gray-100 min-h-screen flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-screen-lg">
-        <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-          <div class="hidden w-full md:block md:w-auto" id="navbar-dropdown">
-            <ul class="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0">
-              <li>
-                <h2 class="block py-2 px-3 text-black md:dark:hover:bg-transparent" aria-current="page">No.</h2>
-              </li>
-              <li>
-                <h2 class="block py-2 px-3 text-black md:dark:hover:bg-transparent" >Problem Name</h2>
-              </li>
-            </ul>
-          </div>
-          <div class="hidden w-full md:block md:w-auto" id="navbar-dropdown">
-            <ul class="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0" >
-              <li>
-                <h2 class="block py-2 px-3 text-black md:dark:hover:bg-transparent">Platform</h2>
-              </li>
-              <li>
-                <h2 class="block py-2 px-3 text-black md:dark:hover:bg-transparent">Status</h2>
-              </li>
-              <li>
-                <h2 class="block py-2 px-3 text-black md:dark:hover:bg-transparent">Difficulty</h2>
-              </li>
-            </ul>
-          </div>
-
+    <div className="bg-gray-100 min-h-screen flex flex-col items-center justify-center">
+      <div className="w-full max-w-screen-lg">
+        <div className="bg-white p-8 rounded-lg shadow-lg mb-4">
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={handleSearchChange}
+            placeholder="Search problems by name..."
+            className="w-full p-2 border border-gray-300 rounded-lg"
+          />
         </div>
 
-        {filteredProblem.map((item) => (
-          <nav class="bg-white border-gray-200 dark:bg-gray-900 dark:border-gray-700">
-            <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-              <div class="hidden w-full md:block md:w-auto" id="navbar-dropdown">
-                <ul class="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
-
-                  <li>
-                    <a href="#" class="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500 dark:bg-blue-600 md:dark:bg-transparent" aria-current="page">{item.problem_number}</a>
-                  </li>
-                  <Link to={`${item.problem_link}`} target="_blank" class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">{item.problem_name}</Link>
-                </ul>
-              </div>
-              <div class="hidden w-full md:block md:w-auto" id="navbar-dropdown">
-                <ul class="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
-
-                  <li>
-                    <a href="#" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">{item.platform}</a>
-                  </li>
-                  <li>
-                    <a href="#" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">{item.status}</a>
-                  </li>
-                  <li>
-                    <a href="#" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">{item.difficulty}</a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </nav>
-        ))}
-
+        <div className="bg-white p-8 rounded-lg shadow-lg w-full">
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-white">
+              <thead>
+                <tr>
+                  <th className="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left text-sm leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                    No.
+                  </th>
+                  <th className="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left text-sm leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                    Problem Name
+                  </th>
+                  <th className="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left text-sm leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                    Platform
+                  </th>
+                  <th className="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left text-sm leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left text-sm leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                    Difficulty
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white">
+                {filteredProblem.map((item) => (
+                  <tr key={item.problem_number}>
+                    <td className="py-2 px-4 border-b border-gray-200">
+                      <a href="#" className="text-blue-600 hover:underline">
+                        {item.problem_number}
+                      </a>
+                    </td>
+                    <td className="py-2 px-4 border-b border-gray-200">
+                      <Link
+                        to={`${item.problem_link}`}
+                        target="_blank"
+                        className="text-blue-600 hover:underline"
+                      >
+                        {item.problem_name}
+                      </Link>
+                    </td>
+                    <td className="py-2 px-4 border-b border-gray-200">
+                      {item.platform}
+                    </td>
+                    <td className="py-2 px-4 border-b border-gray-200">
+                      <button
+                        onClick={() => updateProblemStatus(item.problem_number)}
+                        className={`px-4 py-2 rounded ${problemStatus[item.problem_number] === "solved" ? "bg-green-500 text-white" : "bg-red-500 text-white"}`}
+                      >
+                        {problemStatus[item.problem_number] || "unsolved"}
+                      </button>
+                    </td>
+                    <td className="py-2 px-4 border-b border-gray-200">
+                      {item.difficulty}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   );
