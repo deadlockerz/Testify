@@ -6,8 +6,9 @@ const courseRoutes = require("./routes/courseRoutes");
 const cartRoutes = require("./routes/cartRoutes");
 const practiceRoutes = require("./routes/problemRoutes");
 const user = require("./routes/user");
-const dashboard = require("./routes/dashboardRouter")
-const profile = require("./routes/profileRouter")
+const dashboard = require("./routes/dashboardRouter");
+const profile = require("./routes/profileRouter");
+const payment = require("./routes/paymentRouters");
 
 const app = express();
 
@@ -23,8 +24,10 @@ app.use("/practice", practiceRoutes);
 app.use("/user",user);
 app.use("/dashboard",dashboard);
 app.use("/profile",profile);
+app.use("/payment",payment);
 
 // Serve static files from the 'assets' directory
 app.use("/assets", express.static(path.join(__dirname, "assets")));
 
 module.exports = app;
+ 

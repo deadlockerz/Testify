@@ -1,5 +1,11 @@
-// import { useState, useEffect, useRef } from 'react';
-import React, { Fragment, useState, useEffect, useRef } from "react";
+import axios from "axios";
+import React, {
+  Fragment,
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+} from "react";
 import { Link } from "react-router-dom";
 import { googleLogout } from "@react-oauth/google";
 import Cookies from "js-cookie";
@@ -7,11 +13,48 @@ const { logo } = require("../utils/constant");
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [user, setUser] = useState({
+    profilePhoto: "",
+    name: "",
+    email: "",
+    phone: "",
+    gender: "",
+    dob: "",
+  });
   const menuRef = useRef(null);
   const crossRef = useRef(null);
 
+  const authToken = Cookies.get("token");
+
+  const fetchUserId = useCallback(async (token) => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_BASE_URL}/user/verify-token`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      fetchUser(response.data.userId); // Fetch user data using the userId
+    } catch (error) {
+      console.error("Failed to fetch user ID:", error);
+    }
+  }, []);
+
+  const fetchUser = useCallback(async (id) => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_BASE_URL}/profile/userprofile/${id}`
+      );
+      setUser(response.data);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  }, []);
+
   useEffect(() => {
-    function handleClickOutside(event) {
+    const handleClickOutside = (event) => {
       if (
         menuRef.current &&
         !menuRef.current.contains(event.target) &&
@@ -20,7 +63,7 @@ const Header = () => {
       ) {
         setMobileMenuOpen(false);
       }
-    }
+    };
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
@@ -28,25 +71,26 @@ const Header = () => {
     };
   }, []);
 
-  const userName = Cookies.get("userName");
-  // const userName = decodeURIComponent(Cookies.get("userName"));;
+  useEffect(() => {
+    if (authToken) {
+      fetchUserId(authToken);
+    } else {
+      console.error("No auth token found");
+    }
+  }, [authToken, fetchUserId]);
 
   const logout = () => {
-    Cookies.remove("userName");
-    Cookies.remove("userId");
-    Cookies.remove("userEmail");
-    window.location = "/login";
+    Cookies.remove("token");
+    googleLogout();
+    window.location.href = "/login"; // Use window.location.href for consistent behavior
   };
 
   return (
     <header className="sticky top-0 bg-white bg-opacity-80 pr-5 pl-5 z-50 select-none">
       <div className="container mx-auto">
         <div className="relative flex items-center justify-between">
-          <div className="flex items-center flex-row ">
-            <Link
-              to="/"
-              className="flex w-auto  py-3" // Adjusted padding here
-            >
+          <div className="flex items-center flex-row">
+            <Link to="/" className="flex w-auto py-3">
               <img src={logo} alt="Testify" className="h-auto max-h-10 mr-4" />
               <div className="text-blue-500 text-2xl custom-font p-1">
                 Testify
@@ -55,11 +99,10 @@ const Header = () => {
           </div>
 
           <div className="flex items-center justify-center">
-            {/* Conditional rendering based on mobileMenuOpen state */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              ref={crossRef} // Assign ref to the cross button
-              className={`h-8 w-12 absolute right-4 top-1/2 block -translate-y-1/2 rounded-lg px-3 py-[3px] ring-primary focus:ring-2 lg:hidden`}
+              ref={crossRef}
+              className="h-8 w-12 absolute right-4 top-1/2 block -translate-y-1/2 rounded-lg px-3 py-[3px] ring-primary focus:ring-2 lg:hidden"
             >
               <div
                 className={`h-2 w-6 flex items-center justify-between transition-transform ${
@@ -78,15 +121,15 @@ const Header = () => {
             </button>
             <nav
               ref={menuRef}
-              className={`absolute right-4 ali top-full w-full max-w-[250px] rounded-lg bg-white px-6 py-2 shadow -2 ${
+              className={`absolute right-4 top-full w-full max-w-[250px] rounded-lg bg-white px-6 py-2 shadow-2 ${
                 mobileMenuOpen ? "" : "hidden"
-              } lg:static lg:block lg:w-full lg:max-w-full lg:shadow-none lg:dark:bg-transparent`}
+              } lg:static lg:block lg:w-full lg:max-w-full lg:shadow-none lg:bg-transparent`}
             >
               <ul className="block lg:flex">
                 <li onClick={() => setMobileMenuOpen(false)}>
                   <Link
                     to="/courses"
-                    className="flex py-2 text-base font-medium text-body-color hover:text-dark dark:text-dark-6 dark:hover:text-black lg:ml-12 lg:inline-flex"
+                    className="flex py-2 text-base font-medium text-body-color hover:text-dark lg:ml-12 lg:inline-flex"
                   >
                     Courses
                   </Link>
@@ -94,7 +137,7 @@ const Header = () => {
                 <li onClick={() => setMobileMenuOpen(false)}>
                   <Link
                     to="/practice"
-                    className="flex py-2 text-base font-medium text-body-color hover:text-dark dark:text-dark-6 dark:hover:text-black lg:ml-12 lg:inline-flex"
+                    className="flex py-2 text-base font-medium text-body-color hover:text-dark lg:ml-12 lg:inline-flex"
                   >
                     Practice
                   </Link>
@@ -102,89 +145,65 @@ const Header = () => {
                 <li onClick={() => setMobileMenuOpen(false)}>
                   <Link
                     to="/cart"
-                    className="flex py-2 text-base font-medium text-body-color hover:text-dark dark:text-dark-6 dark:hover:text-black lg:ml-12 lg:inline-flex"
+                    className="flex py-2 text-base font-medium text-body-color hover:text-dark lg:ml-12 lg:inline-flex"
                   >
                     Cart
                   </Link>
                 </li>
                 <li onClick={() => setMobileMenuOpen(false)}>
                   <Link
-                    to="/cart"
-                    className="flex py-2 text-base font-medium text-body-color hover:text-dark dark:text-dark-6 dark:hover:text-black lg:ml-12 lg:inline-flex"
+                    to="/documentation"
+                    className="flex py-2 text-base font-medium text-body-color hover:text-dark lg:ml-12 lg:inline-flex"
                   >
                     Doc
                   </Link>
                 </li>
                 <li onClick={() => setMobileMenuOpen(false)}>
                   <Link
-                    to="/cart"
-                    className="flex py-2 text-base font-medium text-body-color hover:text-dark dark:text-dark-6 dark:hover:text-black lg:ml-12 lg:inline-flex"
+                    to="/blog"
+                    className="flex py-2 text-base font-medium text-body-color hover:text-dark lg:ml-12 lg:inline-flex"
                   >
-                    vlogs
+                    Vlogs
                   </Link>
                 </li>
-                {/* Render Login and SignUp links conditionally */}
-                {/* {mobileMenuOpen && window.innerWidth <= 640 && (
-                  <>
-                    <li onClick={() => setMobileMenuOpen(false)}>
-                      <Link
-                        to='/login'
-                        className='flex py-2 text-base font-medium text-body-color hover:text-dark dark:text-dark-6 dark:hover:text-black lg:ml-12 lg:inline-flex'
-                      >
-                        Login
-                      </Link>
-                    </li>
-                    <li onClick={() => setMobileMenuOpen(false)}>
-                      <Link
-                        to='/forgetPass'
-                        className='flex py-2 text-base font-medium text-body-color hover:text-dark dark:text-dark-6 dark:hover:text-black lg:ml-12 lg:inline-flex'
-                      >
-                        SignUp
-                      </Link>
-                    </li>
-                  </>
-                )} */}
               </ul>
             </nav>
           </div>
+
           <div className="flex justify-end">
-            {userName ? (
+            {user.name ? (
               <Fragment>
-                <div className="hidden justify-end pr-16 sm:flex lg:pr-0 ">
+                <div className="hidden justify-end pr-16 sm:flex lg:pr-0">
                   <button
-                    onClick={() => {
-                      logout();
-                      googleLogout();
-                    }}
-                    class="px-7 py-2 text-base font-medium text-dark hover:text-primary dark:text-black"
+                    onClick={logout}
+                    className="px-7 py-2 text-base font-medium text-dark hover:text-primary dark:text-black"
                   >
                     Log out
                   </button>
-
                   <Link
-                    to={`/dashboard`} // Change the path if necessary
+                    to="/dashboard" // Change the path if necessary
                     className="flex items-center space-x-2 px-4 py-2 text-base font-medium text-dark hover:text-primary dark:text-black"
                   >
+                  {user.profilePhoto ? (
                     <img
-                      src="https://funkylife.in/wp-content/uploads/2023/02/cute-girl-pic-71-819x1024.jpg"
-                      alt="User Profile"
-                      className="w-12 h-12 rounded-full object-cover mt-1"
-                    />
-                    {/* Optionally include user name or other text here */}
-                    {/* <span className="hidden md:inline">{userName}</span> */}
+                      src={`${process.env.REACT_APP_BASE_URL}${user.profilePhoto}`}
+                      alt="Profile"
+                      className="w-16 h-16 rounded-full object-cover mb-1 border-1 border-indigo-500"
+                    />):(
+                       user.name
+                    )}
                   </Link>
                 </div>
               </Fragment>
             ) : (
               <Fragment>
-                <div className="hidden justify-end pr-16 sm:flex lg:pr-0 ">
+                <div className="hidden justify-end pr-16 sm:flex lg:pr-0">
                   <Link
                     to="/login"
                     className="px-7 py-2 text-base font-medium text-dark hover:text-primary dark:text-black"
                   >
                     Login
                   </Link>
-
                   <Link
                     to="/signup"
                     className="px-7 py-2 text-base font-medium text-dark hover:text-primary dark:text-black"

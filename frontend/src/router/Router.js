@@ -11,14 +11,15 @@ import Error from "../components/Error";
 import AdminHome from "../admin/AdminHome";
 import AdminPractice from "../admin/AdminPractice";
 import UpdateCourse from "../admin/UpdateCourse";
-import CardPayment from "../pages/CardPayment";
-import UpiPayment from "../pages/UpiPayment";
-import BankPayment from "../pages/BankPayment";
-import PayPalPayment from "../pages/PayPalPayment";
 import CourseDetail from "../pages/CourseDetail";
 import ForgotPassword from "../pages/ForgotPassword";
 import ResetPassword from "../pages/ResetPassword";
 import Dashboard from "../pages/Dashboard";
+import Paymentsucess from "../pages/paymentsucess";
+import Paymentfail from "../pages/paymentfail";
+import Profile from "../pages/Profile";
+import Blog from "../pages/blog";
+import Documentation from "../pages/Documentation"
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
 import App from "../App";
@@ -51,14 +52,16 @@ import App from "../App";
         { path: "/admin", element: <AdminHome /> },
         { path: "/adminpractice", element: <AdminPractice /> },
         { path: "/updatecourse/:id", element: <UpdateCourse /> },
-        { path: "/credit-card-payment", element: <CardPayment /> },
-        { path: "/upi-payment", element: <UpiPayment /> },
-        { path: "/bank-transfer-payment", element: <BankPayment /> },
-        { path: "/paypal-payment", element: <PayPalPayment /> },
         { path: "/course/:id", element: <CourseDetail /> },
         { path: "/forgot-password", element: <ForgotPassword /> },
         { path: "/reset-password/:id/:token", element: <ResetPassword /> },
         { path: "/dashboard", element: <Dashboard/>},
+        { path: "/success", element: <Paymentsucess/>},
+        { path: "/cancel", element: <Paymentfail/>},
+        { path: "/blog", element: <Blog/>},
+        { path: "/profile", element: <Profile/>},
+        { path: "/documentation" , element: <Documentation/>},
+
 
         {
           path: "*",
@@ -69,7 +72,7 @@ import App from "../App";
   ]);
   const AppWrapper = () => {
     return (
-      <GoogleOAuthProvider clientId="658716736046-lrhfa8d733m376vdf0n8mqerpoct6o1v.apps.googleusercontent.com">
+      <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
         <RouterProvider router={router} />
       </GoogleOAuthProvider>
     );

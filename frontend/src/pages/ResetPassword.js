@@ -9,7 +9,7 @@ const ResetPassword = () => {
     const handleResetPassword = async (e) => {
       e.preventDefault();
       try {
-       const res = await axios.post(`http://localhost:3030/user/reset-password/${id}/${token}`, {
+       const res = await axios.post(`${process.env.REACT_APP_BASE_URL}/user/reset-password/${id}/${token}`, {
           password: password,
         });
         console.log(res.data)

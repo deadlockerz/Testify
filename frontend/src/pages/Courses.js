@@ -7,8 +7,7 @@ import {
   CardBody,
   CardFooter,
   Typography,
-  Button,
-} from "@material-tailwind/react"; // Ensure you have the correct imports
+  } from "@material-tailwind/react"; // Ensure you have the correct imports
 import SearchBar from "../components/SearchBar";
 
 const Courses = () => {
@@ -21,7 +20,7 @@ const Courses = () => {
 
   const fetchAllCourses = async () => {
     try {
-      const res = await axios.get("http://localhost:3030/courses/readallcourses");
+      const res = await axios.get(`${process.env.REACT_APP_BASE_URL}/courses/readallcourses`);
       setCourses(res.data);
       setFilteredCourses(res.data); // Initially, set filtered courses to all courses
     } catch (error) {
@@ -32,7 +31,7 @@ const Courses = () => {
   // Add to cart function
   const addtocart = async (courseId) => {
     try {
-      const res = await axios.post(`http://localhost:3030/cart/cart/${courseId}`);
+      const res = await axios.post(`${process.env.REACT_APP_BASE_URL}/cart/cart/${courseId}`);
       if (res.status === 201) {
         alert("Course added to cart");
       }
@@ -41,9 +40,7 @@ const Courses = () => {
     }
   };
 
-  // Base URL for assets
-  const baseUrl = "http://localhost:3030";
-
+  
   return (
     <div>
       <SearchBar courses={courses} setFilteredCourses={setFilteredCourses} />
@@ -52,11 +49,7 @@ const Courses = () => {
           <Card key={item._id} className="w-full max-w-xs mx-auto">
             <Link to={`/course/${item._id}`}>
               <CardHeader color="blue-gray" className="relative h-56">
-                {/* <img
-                  src={`${baseUrl}/assets/${item.img}`} // Use baseUrl to form the correct image path
-                  alt="card-image"
-                  className="object-cover w-full h-full"
-                /> */}
+               
                 <img
                   src={`${item.img}`}
                   alt="card-image"

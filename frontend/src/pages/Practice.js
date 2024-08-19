@@ -3,36 +3,53 @@ import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
 
-const user_id = Cookies.get("userId");
-
-
 const Practice = () => {
+  const [userId, setUserId] = useState(null);
+  const [problems, setProblems] = useState([]);
+  const [filteredProblems, setFilteredProblems] = useState([]);
   const [problemStatus, setProblemStatus] = useState({});
-  const [filteredProblem, setFilteredProblem] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    fetchAllProblems();
+    const token = Cookies.get("token"); // Use correct cookie key for token
+    if (token) {
+      fetchUserId(token);
+    } else {
+      console.error("No auth token found");
+    }
   }, []);
 
-  // Fetch all problems
-  const fetchAllProblems = async () => {
+  const fetchUserId = async (token) => {
     try {
-      const res = await axios.get("http://localhost:3030/practice/allProblems");
-      setFilteredProblem(res.data);
+      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/user/verify-token`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setUserId(response.data.userId);
+      fetchAllProblems(response.data.userId);
+    } catch (error) {
+      console.error("Failed to fetch user ID:", error);
+    }
+  };
+
+  const fetchAllProblems = async (userId) => {
+    try {
+      const res = await axios.get(`${process.env.REACT_APP_BASE_URL}/practice/allProblems`);
+      setProblems(res.data);
+      setFilteredProblems(res.data);
       res.data.forEach((problem) => {
-        fetchProblemStatus(problem.problem_number);
+        fetchProblemStatus(userId, problem.problem_number);
       });
     } catch (error) {
       console.error("Error fetching problems:", error);
     }
   };
 
-  // Fetch the status of a specific problem for the current user
-  const fetchProblemStatus = async (problemNumber) => {
+  const fetchProblemStatus = async (userId, problemNumber) => {
     try {
       const res = await axios.get(
-        `http://localhost:3030/dashboard/status/${user_id}/${problemNumber}`
+        `${process.env.REACT_APP_BASE_URL}/dashboard/status/${userId}/${problemNumber}`
       );
       setProblemStatus((prevStatus) => ({
         ...prevStatus,
@@ -43,17 +60,14 @@ const Practice = () => {
     }
   };
 
-  // Update problem status
   const updateProblemStatus = async (problemNumber) => {
     try {
       const currentStatus = problemStatus[problemNumber] === "solved" ? "unsolved" : "solved";
-
-      await axios.post("http://localhost:3030/dashboard/updateProblemStatus", {
-        user_id,
+      await axios.post(`${process.env.REACT_APP_BASE_URL}/dashboard/updateProblemStatus`, {
+        userId,
         problem_number: problemNumber,
         status: currentStatus,
       });
-
       setProblemStatus((prevStatus) => ({
         ...prevStatus,
         [problemNumber]: currentStatus,
@@ -63,22 +77,19 @@ const Practice = () => {
     }
   };
 
-  // Handle search input change
   const handleSearchChange = (event) => {
     const value = event.target.value.toLowerCase();
     setSearchTerm(value);
-
-    // Filter problems by name based on search term
-    const filtered = filteredProblem.filter((problem) =>
+    const filtered = problems.filter((problem) =>
       problem.problem_name.toLowerCase().includes(value)
     );
-    setFilteredProblem(filtered);
+    setFilteredProblems(filtered);
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen flex flex-col items-center justify-center">
+    <div className="bg-gray-100 min-h-screen flex flex-col items-center justify-center ">
       <div className="w-full max-w-screen-lg">
-        <div className="bg-white p-8 rounded-lg shadow-lg mb-4">
+        <div className="bg-white p-8 rounded-lg shadow-lg mt-4 mb-4">
           <input
             type="text"
             value={searchTerm}
@@ -88,30 +99,30 @@ const Practice = () => {
           />
         </div>
 
-        <div className="bg-white p-8 rounded-lg shadow-lg w-full">
+        <div className="bg-white p-8 rounded-lg mb-5 shadow-lg w-full">
           <div className="overflow-x-auto">
             <table className="min-w-full bg-white">
               <thead>
                 <tr>
-                  <th className="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left text-sm leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
                     No.
                   </th>
-                  <th className="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left text-sm leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
                     Problem Name
                   </th>
-                  <th className="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left text-sm leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
                     Platform
                   </th>
-                  <th className="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left text-sm leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left text-sm leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
                     Difficulty
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-white">
-                {filteredProblem.map((item) => (
+                {filteredProblems.map((item) => (
                   <tr key={item.problem_number}>
                     <td className="py-2 px-4 border-b border-gray-200">
                       <a href="#" className="text-blue-600 hover:underline">

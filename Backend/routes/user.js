@@ -37,33 +37,30 @@ router.post("/login", async (req, res) => {
     if (!isMatch) {
       return res.status(401).send("Invalid password");
     }
-    // const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "3000s" });
-    res.json({ user });
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "3000s" });
+    res.json({ user, token });
   } catch (e) {
     res.status(500).send(e.message);
   }
 });
 
-// user forgot password 
-router.post('/forgot-password' , async(req,res) =>{
-  const email = req.body.email ;
-   try{
-     const olduser = await User.findOne({email : email})
-     if(!olduser){
-       return res.json({status : "Email does not exist"})
-     }
-     const key = process.env.JWT_SECRET + olduser.password;
-     const token = jwt.sign({ email: olduser.email,id: olduser._id }, key , { expiresIn: '3000s' });
-     const link =`http://localhost:3000/reset-password/${olduser._id}/${token}`;
-     await sendEmail(email, link);
-     res.send(link)
-   }catch(e){
-      res.status(422).send(e.message)
-   }
-})
+router.post('/forgot-password', async (req, res) => {
+  const email = req.body.email;
+  try {
+    const oldUser = await User.findOne({ email: email });
+    if (!oldUser) {
+      return res.json({ status: "Email does not exist" });
+    }
+    const key = process.env.JWT_SECRET + oldUser.password;
+    const token = jwt.sign({ email: oldUser.email, id: oldUser._id }, key, { expiresIn: '300s' });
+    const link = `http://localhost:3000/reset-password/${oldUser._id}/${token}`;
+    await sendEmail(email, link);
+    res.send(link);
+  } catch (e) {
+    res.status(422).send(e.message);
+  }
+});
 
-//email otp validation 
-dotenv.config();
 let transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
   port: process.env.SMTP_PORT,
@@ -99,8 +96,6 @@ router.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-
-// Reset Password 
 router.post("/reset-password/:id/:token", async (req, res) => {
   const { id, token } = req.params;
   const { password } = req.body;
@@ -112,7 +107,7 @@ router.post("/reset-password/:id/:token", async (req, res) => {
   const secret = process.env.JWT_SECRET + oldUser.password;
   try {
     const verify = jwt.verify(token, secret);
-    const saltRounds = 10; // Specify the number of salt rounds
+    const saltRounds = 10;
     const encryptedPassword = await bcrypt.hash(password, saltRounds);
 
     await User.updateOne(
@@ -133,20 +128,27 @@ router.post("/reset-password/:id/:token", async (req, res) => {
   }
 });
 
-// Token verification 
 function verifyToken(req, res, next) {
   const bearerHeader = req.headers["authorization"];
   if (typeof bearerHeader !== 'undefined') {
-      const bearer = bearerHeader.split(" ");
-      const token = bearer[1];
-      req.token = token;
-      next();
+    const bearer = bearerHeader.split(" ");
+    const token = bearer[1];
+    req.token = token;
+    next();
   } else {
-      res.status(403).send({
-          result: "Token is not valid"
-      });
+    res.status(403).json({ message: "Token is not valid" });
   }
 }
 
+// Verify JWT token and return user ID
+router.get("/verify-token", verifyToken, (req, res) => {
+  try {
+    const token = req.token;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    res.json({ userId: decoded.userId });
+  } catch (error) {
+    res.status(401).json({ message: "Invalid or expired token" });
+  }
+});
 
 module.exports = router;

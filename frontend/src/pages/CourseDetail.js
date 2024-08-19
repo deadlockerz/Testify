@@ -3,7 +3,7 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 
 const CourseDetail = () => {
-  const [courseDetail, setCourseDetail] = useState(null);
+  const [courseDetail, setCourseDetail] = useState(null); 
   const { id } = useParams();
   const courseId = id;
 
@@ -11,7 +11,7 @@ const CourseDetail = () => {
     const fetchCourseDetail = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3030/course/course-detail/${courseId}`
+          `${process.env.PORT}/course/course-detail/${courseId}`
         );
         setCourseDetail(response.data);
       } catch (error) {
@@ -22,6 +22,7 @@ const CourseDetail = () => {
     fetchCourseDetail();
   }, [courseId]);
 
+ 
   if (!courseDetail) {
     return <div>Loading...</div>;
   }

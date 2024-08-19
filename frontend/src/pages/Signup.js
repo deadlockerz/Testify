@@ -3,7 +3,6 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 
 
-
 const { logo } = require("../utils/constant");
 
 function SignupForm() {
@@ -26,7 +25,7 @@ function SignupForm() {
   //save data to the server
   const handleSubmit = async () => {
     try {
-      const res = await axios.post("http://localhost:3030/user/signup", inputUser);
+      const res = await axios.post(`${process.env.REACT_APP_BASE_URL}/user/signup`, inputUser);
       console.log(res);
       if (res.status === 201) {
         alert("User created successfully");
@@ -54,7 +53,7 @@ function SignupForm() {
   const sendOTP = async () => {
     try {
       const phoneNumber = inputUser.phone;
-      const response = await axios.post('http://localhost:4040/sendotp',phoneNumber)
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/sendotp`,phoneNumber)
       if (response.data.success) {
         setOtp(response.data.otp);
       } else {

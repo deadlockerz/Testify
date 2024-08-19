@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { Link } from 'react-router-dom';
 import { LineChart } from "@mui/x-charts/LineChart";
-import UpdateProfilePopup from './Profile';
 
 import {
   Card,
@@ -13,28 +13,21 @@ import Chart from "react-apexcharts";
 import Cookies from "js-cookie";
 import axios from "axios";
 
-const userId = Cookies.get("userId");
+const authToken = Cookies.get("token");
 
 const Dashboard = () => {
   
   // profile update
-  const [isPopupOpen, setPopupOpen] = useState(false);
-
-  const handleProfileClick = () => {
-    setPopupOpen(true);
-  };
-
-  const handleClosePopup = () => {
-    setPopupOpen(false);
-  };
-
-  
-
-
-
-
-
-
+  // const [isPopupOpen, setPopupOpen] = useState(false);
+  const [user, setUser] = useState({
+    profilePhoto: "",
+    name: "",
+    email: "",
+    phone: "",
+    gender: "",
+    dob: "",
+  });
+  const [userId, setUserId] = useState(null);
   const [statistics, setStatistics] = useState(null);
   const [total, settotal] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -63,14 +56,35 @@ const Dashboard = () => {
   });
 // dashboard pai chart data
   useEffect(() => {  
-    fetchStatistics();
+    // fetchStatistics();
     getProblemStatistics();
-  }, []);
+    if (authToken) {
+      fetchUserId(authToken);
+    } else {
+      console.error("No auth token found");
+    }
+  }, [authToken]);
 
-  const fetchStatistics = async () => {
+  const fetchUserId = async (token) => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/user/verify-token`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setUserId(response.data.userId); // Set userId from response
+      fetchStatistics(response.data.userId);
+      fetchUser(response.data.userId); // Fetch user data using the userId
+    } catch (error) {
+      console.error("Failed to fetch user ID:", error);
+    }
+  };
+
+  // pi graph data
+  const fetchStatistics = async (userId) => {
     try {
       const response = await axios.get(
-        `http://localhost:3030/dashboard/statistics/${userId}`
+        `${process.env.REACT_APP_BASE_URL}/dashboard/statistics/${userId}`
       );
       const data = response.data;
       setStatistics(data);
@@ -91,10 +105,20 @@ const Dashboard = () => {
     }
   };
 
+// user details
+const fetchUser = async (id) => {
+  try {
+    const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/profile/userprofile/${id}`);
+    setUser(response.data);
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+  }
+};  
+
 // total problems
 const getProblemStatistics = async () => {
   try {
-    const response = await axios.get(`http://localhost:3030/practice/statistics`);
+    const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/practice/statistics`);
     const data = response.data;
      settotal(data);
     
@@ -165,17 +189,18 @@ const getProblemStatistics = async () => {
     <ul className="space-y-2 font-medium">
       <div className="flex flex-col items-center justify-center">
   <div>
-    <img
-      src="https://photosbull.com/wp-content/uploads/2024/05/1000060433.jpg"
-      alt="profile"
-      className="w-24 h-24 rounded-full object-cover"
-      onClick={handleProfileClick}
-    />
+   <Link to="/profile">
+   <img
+              src={`${process.env.REACT_APP_BASE_URL}${user.profilePhoto}`}
+              alt="Profile"
+              className="w-32 h-32 rounded-full object-cover mb-1 border-2 border-indigo-500"
+            />
+   </Link>
   </div>
 
   <div className="flex flex-col items-center mt-4">
-    <h1 className="text-sm text-gray-100 dark:text-gray-100">DeepSikha</h1>
-    <h4 className="text-sm text-gray-100 dark:text-gray-100">sikha@example.com</h4>
+    <h1 className="text-sm text-gray-100 dark:text-gray-100">{user.name}</h1>
+    <h4 className="text-sm text-gray-100 dark:text-gray-100">{user.email}</h4>
   </div>
 </div>
 
@@ -259,7 +284,7 @@ const getProblemStatistics = async () => {
       </li>
     </ul>
   </div>
-  <UpdateProfilePopup isOpen={isPopupOpen} onClose={handleClosePopup} />
+  {/* <UpdateProfilePopup isOpen={isPopupOpen} onClose={handleClosePopup} /> */}
 </aside>
 
       <div className="p-4 sm:ml-64">
