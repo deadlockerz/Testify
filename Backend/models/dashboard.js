@@ -11,9 +11,9 @@ const userProblemStatusSchema = new mongoose.Schema({
 const userStatisticsSchema = new mongoose.Schema({
   user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   total_problems: { type: Number, default: 0 },
-  easy_count: { type: Number, default: 0 },
-  medium_count: { type: Number, default: 0 },
-  hard_count: { type: Number, default: 0 },
+  easy_count: { type: Number, default: 1 },
+  medium_count: { type: Number, default: 1 },
+  hard_count: { type: Number, default: 1 },
   problems_solved_today: { type: Number, default: 0 },
   last_updated: { type: Date, default: Date.now },
   solved_dates: [{ type: Date }]

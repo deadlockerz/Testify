@@ -2,66 +2,69 @@ import React, { useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
-
 const { logo } = require("../utils/constant");
 
 function SignupForm() {
-
-  const [inputUser, setinputUser] = useState({
+  const [inputUser, setInputUser] = useState({
     email: "",
     name: "",
     phone: "",
     password: "",
+    otp: "", // Added otp field for form state
   });
+  const [otp, setOtp] = useState(""); // Changed from array to string
 
-  //set changes from input
+  // Set changes from input
   const handleChange = (e) => {
-    setinputUser({
+    setInputUser({
       ...inputUser,
       [e.target.name]: e.target.value,
     });
   };
 
-  //save data to the server
+  // Save data to the server
   const handleSubmit = async () => {
     try {
       const res = await axios.post(`${process.env.REACT_APP_BASE_URL}/user/signup`, inputUser);
-      console.log(res);
       if (res.status === 201) {
         alert("User created successfully");
         window.location = "/login";
-      }
-      if (res.status === 400) {
-        alert("User allready exist");
+      } else if (res.status === 400) {
+        alert("User already exists");
       }
     } catch (error) {
       console.error("An error occurred:", error);
-      alert("User allready exist");
+      alert("An error occurred during signup. Please try again.");
     }
   };
 
-  const [otp, setOtp] = useState('');
-   const isValidOTP = (e)=>{
+  // Function to validate OTP
+  const isValidOTP = (e) => {
     e.preventDefault();
-    //  if(otp ===  inputUser.otp){
+
+    if (otp === inputUser.otp) {
       handleSubmit();
-      // setOtp= null 
-  //  }
-  }
-  
-  //sms otp verification 
+      setOtp(""); // Correctly call setOtp to reset it
+    } else {
+      alert("Invalid OTP. Please try again.");
+    }
+  };
+
+  // SMS OTP verification
   const sendOTP = async () => {
     try {
       const phoneNumber = inputUser.phone;
-      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/sendotp`,phoneNumber)
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/user/sendotp`, { phoneNumber });
+
       if (response.data.success) {
+        alert(`OTP sent to ${phoneNumber}`);
         setOtp(response.data.otp);
       } else {
-        alert('Failed to gunrate OTP');
+        alert('Failed to generate OTP. Please try again.');
       }
     } catch (error) {
-      console.error(error);
-      alert('Failed to send OTP');
+      console.error('Error sending OTP:', error);
+      alert('An error occurred while sending OTP. Please try again later.');
     }
   };
 
@@ -75,7 +78,7 @@ function SignupForm() {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <form className="space-y-6" onSubmit={(e) => isValidOTP(e)}>
+        <form className="space-y-6" onSubmit={isValidOTP}>
           <div>
             <label
               htmlFor="username"
@@ -86,16 +89,16 @@ function SignupForm() {
             <div className="mt-2">
               <input
                 type="text"
-                      name="name"
-                      placeholder="Full Name"
-                      value={inputUser.name}
-                      onChange={handleChange}
+                name="name"
+                placeholder="Full Name"
+                value={inputUser.name}
+                onChange={handleChange}
                 required
                 className="pl-3 w-full rounded-md border border-gray-300 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               />
             </div>
           </div>
- 
+
           <div>
             <label
               htmlFor="email"
@@ -106,11 +109,11 @@ function SignupForm() {
             <div className="mt-2">
               <input
                 type="email"
-                      name="email"
-                      placeholder="Email"
-                      value={inputUser.email}
-                      onChange={handleChange}
-                      pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                name="email"
+                placeholder="Email"
+                value={inputUser.email}
+                onChange={handleChange}
+                pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
                 required
                 className="pl-3 w-full rounded-md border border-gray-300 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               />
@@ -127,11 +130,10 @@ function SignupForm() {
             <div className="mt-2">
               <input
                 type="tel"
-                      name="phone"
-                      // country={'in'}
-                      placeholder="contact"
-                      value={inputUser.phone}
-                      onChange={handleChange}
+                name="phone"
+                placeholder="Contact Number"
+                value={inputUser.phone}
+                onChange={handleChange}
                 required
                 className="pl-3 w-full rounded-md border border-gray-300 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               />
@@ -147,14 +149,13 @@ function SignupForm() {
             </label>
             <div className="mt-2">
               <input
-                type="password" 
-                      name="password"
-                      placeholder="Set Password"
-                      value={inputUser.password}
-                      onChange={handleChange}
-                      pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}"
-                      title="Password must contain at least one digit, one uppercase letter, one lowercase letter, one special character, and be at least 8 characters long"
-                   
+                type="password"
+                name="password"
+                placeholder="Set Password"
+                value={inputUser.password}
+                onChange={handleChange}
+                pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}"
+                title="Password must contain at least one digit, one uppercase letter, one lowercase letter, one special character, and be at least 8 characters long"
                 required
                 className="pl-3 w-full rounded-md border border-gray-300 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               />
@@ -183,21 +184,21 @@ function SignupForm() {
           <div className="flex">
             <input
               className="w-full px-8 py-4 rounded-l font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-3"
-              type="tel"
+              type="text"
               name="otp"
               placeholder="Enter OTP"
               value={inputUser.otp}
               onChange={handleChange}
             />
-
             <button
+              type="button"
               className="mt-3 tracking-wide font-semibold bg-indigo-500 text-gray-100 w-full py-4 rounded-r hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
-              // onClick={sendEmail}
               onClick={sendOTP}
             >
               Send OTP
             </button>
           </div>
+
           <div>
             <button
               type="submit"

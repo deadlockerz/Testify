@@ -5,7 +5,7 @@ const connectDB = require("./config/db");
 const courseRoutes = require("./routes/courseRoutes");
 const cartRoutes = require("./routes/cartRoutes");
 const practiceRoutes = require("./routes/problemRoutes");
-const user = require("./routes/user");
+const user = require("./routes/userRouter");
 const dashboard = require("./routes/dashboardRouter");
 const profile = require("./routes/profileRouter");
 const payment = require("./routes/paymentRouters");
@@ -20,7 +20,7 @@ app.use(express.json());
 // Routes
 app.use("/courses", courseRoutes);
 app.use("/cart", cartRoutes);
-app.use("/practice", practiceRoutes);
+app.use("/practice", practiceRoutes); 
 app.use("/user",user);
 app.use("/dashboard",dashboard);
 app.use("/profile",profile);

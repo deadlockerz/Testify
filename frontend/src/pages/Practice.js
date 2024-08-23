@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
+const authtoken = Cookies.get("token"); // Use correct cookie key for token
 
 const Practice = () => {
   const [userId, setUserId] = useState(null);
@@ -11,13 +12,13 @@ const Practice = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    const token = Cookies.get("token"); // Use correct cookie key for token
-    if (token) {
-      fetchUserId(token);
+    if (authtoken) {
+      fetchUserId(authtoken);
     } else {
       console.error("No auth token found");
     }
-  }, []);
+    fetchAllProblems();
+  }, [authtoken]);
 
   const fetchUserId = async (token) => {
     try {
@@ -60,11 +61,13 @@ const Practice = () => {
     }
   };
 
-  const updateProblemStatus = async (problemNumber) => {
+  // update problem status
+
+  const updateProblemStatus = async (userId,problemNumber) => {
     try {
       const currentStatus = problemStatus[problemNumber] === "solved" ? "unsolved" : "solved";
       await axios.post(`${process.env.REACT_APP_BASE_URL}/dashboard/updateProblemStatus`, {
-        userId,
+        user_id:userId,
         problem_number: problemNumber,
         status: currentStatus,
       });
@@ -143,7 +146,7 @@ const Practice = () => {
                     </td>
                     <td className="py-2 px-4 border-b border-gray-200">
                       <button
-                        onClick={() => updateProblemStatus(item.problem_number)}
+                        onClick={() => updateProblemStatus(userId,item.problem_number)}
                         className={`px-4 py-2 rounded ${problemStatus[item.problem_number] === "solved" ? "bg-green-500 text-white" : "bg-red-500 text-white"}`}
                       >
                         {problemStatus[item.problem_number] || "unsolved"}

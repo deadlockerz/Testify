@@ -5,12 +5,16 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const nodemailer = require("nodemailer");
+const twilio = require('twilio');
+
 
 dotenv.config(); // Load environment variables
 
 const saltRounds = 10;
 
-router.post("/signup", async (req, res) => {
+// signup
+
+router.post("/signup", async (req, res) => { 
   try {
     const { name, email, phone, password } = req.body;
     const existingUser = await User.findOne({ $or: [{ email }, { phone }] });
@@ -26,6 +30,8 @@ router.post("/signup", async (req, res) => {
   }
 });
 
+
+// login 
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -43,6 +49,8 @@ router.post("/login", async (req, res) => {
     res.status(500).send(e.message);
   }
 });
+
+// forgot password
 
 router.post('/forgot-password', async (req, res) => {
   const email = req.body.email;
@@ -86,6 +94,8 @@ const sendEmail = async (email, link) => {
   }
 };
 
+ // send email
+
 router.post("/email/sendEmail", async (req, res) => {
   const { email, link } = req.body;
   await sendEmail(email, link);
@@ -127,6 +137,37 @@ router.post("/reset-password/:id/:token", async (req, res) => {
     res.json({ status: "Invalid or expired token" });
   }
 });
+
+
+// Send OTP 
+const client = twilio(process.env.SMS_SID, process.env.SMS_TOKEN);
+
+router.post('/sendotp', (req, res) => {
+  const { phoneNumber } = req.body;
+
+  // Validate phone number (basic validation)
+  if (!/^\d{10}$/.test(phoneNumber)) {
+    return res.status(400).json({ success: false, error: 'Invalid phone number format. Please enter a 10-digit phone number without country code.' });
+  }
+
+  // Generate OTP securely
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+  client.messages
+    .create({
+      from: process.env.SMS_NUMBER,
+      body: `Your OTP is: ${otp}`,
+      to: `+91${phoneNumber}`, // Adjust if you are using a different country code
+    })
+    .then(() => {
+      res.json({ success: true, otp });
+    })
+    .catch((error) => {
+      console.error('Error sending OTP:', error);
+      res.status(500).json({ success: false, error: 'Failed to send OTP. Please try again later.' });
+    });
+});
+// jwt verify function 
 
 function verifyToken(req, res, next) {
   const bearerHeader = req.headers["authorization"];

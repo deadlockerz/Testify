@@ -9,14 +9,38 @@ import {
   Typography,
   } from "@material-tailwind/react"; // Ensure you have the correct imports
 import SearchBar from "../components/SearchBar";
+import Cookies from "js-cookie";
+const authToken = Cookies.get("token");
+
 
 const Courses = () => {
   const [courses, setCourses] = useState([]);
   const [filteredCourses, setFilteredCourses] = useState([]);
+  const [userId, setUserId] = useState(null);
 
   useEffect(() => {
     fetchAllCourses();
-  }, []);
+    if (authToken) {
+      fetchUserId(authToken);
+    } else {
+      console.error("No auth token found");
+    }
+  }, [authToken]);
+
+  // fetch all courses
+  const fetchUserId = async (token) => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/user/verify-token`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setUserId(response.data.userId); // Set userId from response      
+    } catch (error) {
+      console.error("Failed to fetch user ID:", error);
+    }
+  };
+
 
   const fetchAllCourses = async () => {
     try {
@@ -29,9 +53,11 @@ const Courses = () => {
   };
 
   // Add to cart function
-  const addtocart = async (courseId) => {
+  const addtocart = async (courseId, userId) => {
     try {
-      const res = await axios.post(`${process.env.REACT_APP_BASE_URL}/cart/cart/${courseId}`);
+      const res = await axios.post(`${process.env.REACT_APP_BASE_URL}/cart/cart/${courseId}`, {
+        userId: userId, // Include userId in the request body
+      });
       if (res.status === 201) {
         alert("Course added to cart");
       }
@@ -39,6 +65,7 @@ const Courses = () => {
       console.error("An error occurred:", e);
     }
   };
+  
 
   
   return (
@@ -66,7 +93,7 @@ const Courses = () => {
             <CardFooter className="pt-0">
               {/* Simplified button for debugging */}
               <button
-                onClick={() => addtocart(item._id)}
+                onClick={() => addtocart(item._id, userId)}
                 className="bg-blue-500 text-white px-4 py-2 rounded"
               >
                 Add to Cart

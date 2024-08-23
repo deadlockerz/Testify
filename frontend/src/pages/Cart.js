@@ -1,22 +1,57 @@
 import { useEffect, useState } from "react";
 import { loadStripe } from '@stripe/stripe-js';
 import axios from "axios";
+import Cookies from "js-cookie";
+
+const authToken = Cookies.get("token");
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
+  const [userId, setUserId] = useState(null);
+
 
   useEffect(() => {
-    cartItem().then((data) => setCartItems(data));
-  }, []);
+    if (authToken) {
+      fetchUserId(authToken);
+    } else {
+      console.error("No auth token found");
+    }
+  }, [authToken]);
 
-  const cartItem = async () => {
+   // jwt check
+   const fetchUserId = async (token) => {
     try {
-      const res = await axios.get(`${process.env.REACT_APP_BASE_URL}/cart/showcartitem`);
+      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/user/verify-token`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setUserId(response.data.userId); // Set userId from response
+      cartItem(response.data.userId).then((data) => setCartItems(data));
+      } catch (error) {
+      console.error("Failed to fetch user ID:", error);
+    }
+  };
+
+
+
+
+
+  // fetch all cart items
+
+  const cartItem = async (userId) => {
+    try {
+      const res = await axios.get(`${process.env.REACT_APP_BASE_URL}/cart/showcartitem`, {
+        params: { userId: userId }, // Include userId as a query parameter
+      });
       return res.data;
     } catch (err) {
       console.log(err);
     }
   };
+  
+
+  // remove item from cart
 
   const handleRemoveFromCart = async (id) => {
     try {

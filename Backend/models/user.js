@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require ('mongoose');
 
 const userSchema = new mongoose.Schema({
     name: { type: String, required: true },
@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema({
     password: { type: String, required: true },
     profilePhoto: { 
         type: String, 
-        default: 'https://photosbull.com/wp-content/uploads/2024/05/1000060433.jpg' // Default profile photo
+        default: '/profile/uploads/1000060433.webp' // Default profile photo
     }, 
     gender: { 
         type: String, 

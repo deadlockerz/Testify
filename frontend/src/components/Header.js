@@ -173,7 +173,7 @@ const Header = () => {
           <div className="flex justify-end">
             {user.name ? (
               <Fragment>
-                <div className="hidden justify-end pr-16 sm:flex lg:pr-0">
+                <div className="hidden sm:flex justify-end pr-16 lg:pr-0">
                   <button
                     onClick={logout}
                     className="px-7 py-2 text-base font-medium text-dark hover:text-primary dark:text-black"
@@ -181,23 +181,24 @@ const Header = () => {
                     Log out
                   </button>
                   <Link
-                    to="/dashboard" // Change the path if necessary
+                    to="/dashboard"
                     className="flex items-center space-x-2 px-4 py-2 text-base font-medium text-dark hover:text-primary dark:text-black"
                   >
-                  {user.profilePhoto ? (
-                    <img
-                      src={`${process.env.REACT_APP_BASE_URL}${user.profilePhoto}`}
-                      alt="Profile"
-                      className="w-16 h-16 rounded-full object-cover mb-1 border-1 border-indigo-500"
-                    />):(
-                       user.name
+                    {user.profilePhoto ? (
+                      <img
+                        src={`${process.env.REACT_APP_BASE_URL}${user.profilePhoto}`}
+                        alt="Profile"
+                        className="w-16 h-16 rounded-full object-cover mb-1 border-1 border-indigo-500"
+                      />
+                    ) : (
+                      <span>{user.name}</span> // Ensure consistent display
                     )}
                   </Link>
                 </div>
               </Fragment>
             ) : (
               <Fragment>
-                <div className="hidden justify-end pr-16 sm:flex lg:pr-0">
+                <div className="hidden sm:flex justify-end pr-16 lg:pr-0">
                   <Link
                     to="/login"
                     className="px-7 py-2 text-base font-medium text-dark hover:text-primary dark:text-black"
