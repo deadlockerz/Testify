@@ -20,6 +20,7 @@ import Paymentfail from "../pages/paymentfail";
 import Profile from "../pages/Profile";
 import Blog from "../pages/blog";
 import Documentation from "../pages/Documentation"
+import Compiler from "../pages/compiler"
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
 import App from "../App";
@@ -61,7 +62,8 @@ import App from "../App";
         { path: "/blog", element: <Blog/>},
         { path: "/profile", element: <Profile/>},
         { path: "/documentation" , element: <Documentation/>},
-
+        { path: "/compiler" , element: <Compiler/>},
+          
 
         {
           path: "*",

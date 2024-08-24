@@ -166,6 +166,14 @@ const Header = () => {
                     Vlogs
                   </Link>
                 </li>
+                <li onClick={() => setMobileMenuOpen(false)}>
+                  <Link
+                    to="/compiler"
+                    className="flex py-2 text-base font-medium text-body-color hover:text-dark lg:ml-12 lg:inline-flex"
+                  >
+                    compiler
+                  </Link>
+                </li>
               </ul>
             </nav>
           </div>
