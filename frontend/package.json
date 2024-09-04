@@ -29,8 +29,9 @@
     "styled-components": "^6.1.12",
     "web-vitals": "^2.1.4"
   },
-  "scripts": {
-    "start": "react-scripts start",
+  "scripts": {    
+    "start": "webpack serve --host 0.0.0.0 --public https://testify-uanx.onrender.com",
+
     "build": "react-scripts build"
   },
   "eslintConfig": {

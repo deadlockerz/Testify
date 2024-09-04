@@ -14,8 +14,8 @@ const app = express();
 
 connectDB();
 
-app.use(cors());
-// app.use(cors({ origin: 'https://your-frontend-url.vercel.app' }));
+// app.use(cors());
+app.use(cors({ origin: 'https://testify-uanx.onrender.com/' }));
 app.use(express.json());
 
 // Routes
