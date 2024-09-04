@@ -74,9 +74,8 @@ const Courses = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 justify-center mt-8">
         {filteredCourses.map((item) => (
           <Card key={item._id} className="w-full max-w-xs mx-auto">
-            <Link to={`/course/${item._id}`}>
-              <CardHeader color="blue-gray" className="relative h-56">
-               
+            <Link to={`/course-detail/${item._id}`}>
+              <CardHeader color="blue-gray" className="relative h-56">               
                 <img
                   src={`${item.img}`}
                   alt="card-image"

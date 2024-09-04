@@ -15,7 +15,7 @@ import CourseDetail from "../pages/CourseDetail";
 import ForgotPassword from "../pages/ForgotPassword";
 import ResetPassword from "../pages/ResetPassword";
 import Dashboard from "../pages/Dashboard";
-import Paymentsucess from "../pages/paymentsucess";
+import Paymentsucess from "../pages/paymentsucess";                             
 import Paymentfail from "../pages/paymentfail";
 import Profile from "../pages/Profile";
 import Blog from "../pages/blog";
@@ -53,7 +53,7 @@ import App from "../App";
         { path: "/admin", element: <AdminHome /> },
         { path: "/adminpractice", element: <AdminPractice /> },
         { path: "/updatecourse/:id", element: <UpdateCourse /> },
-        { path: "/course/:id", element: <CourseDetail /> },
+        { path: "/course-detail/:id", element: <CourseDetail /> },
         { path: "/forgot-password", element: <ForgotPassword /> },
         { path: "/reset-password/:id/:token", element: <ResetPassword /> },
         { path: "/dashboard", element: <Dashboard/>},

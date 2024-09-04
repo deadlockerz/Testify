@@ -50,6 +50,18 @@ router.post("/login", async (req, res) => {
   }
 });
 
+// fetch all users 
+router.get('/fetchallusers', async (req,res) => {
+  try{
+  const users = await User.find({});
+  res.send(users)
+} catch (error) {
+  console.error("Error fetching courses:", error);
+  res.status(500).send("An error occurred while fetching courses");
+}
+})
+
+
 // forgot password
 
 router.post('/forgot-password', async (req, res) => {

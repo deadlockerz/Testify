@@ -7,6 +7,7 @@ import React, {
   useCallback,
 } from "react";
 import { Link } from "react-router-dom";
+import { googleLogout } from "@react-oauth/google";
 import Cookies from "js-cookie";
 const { logo } = require("../utils/constant");
 
@@ -78,6 +79,11 @@ const Header = () => {
     }
   }, [authToken, fetchUserId]);
 
+  const logout = () => {
+    Cookies.remove("token");
+    googleLogout();
+    window.location.href = "/adminlogin"; // Use window.location.href for consistent behavior
+  };
 
   return (
     <header className="sticky top-0 bg-white bg-opacity-80 pr-5 pl-5 z-50 select-none">
@@ -87,7 +93,7 @@ const Header = () => {
             <Link to="/" className="flex w-auto py-3">
               <img src={logo} alt="Testify" className="h-auto max-h-10 mr-4" />
               <div className="text-blue-500 text-2xl custom-font p-1">
-                Testify
+                Testify Admin
               </div>
             </Link>
           </div>
@@ -122,7 +128,7 @@ const Header = () => {
               <ul className="block lg:flex">
                 <li onClick={() => setMobileMenuOpen(false)}>
                   <Link
-                    to="/courses"
+                    to="/admin_courses"
                     className="flex py-2 text-base font-medium text-body-color hover:text-dark lg:ml-12 lg:inline-flex"
                   >
                     Courses
@@ -130,90 +136,77 @@ const Header = () => {
                 </li>
                 <li onClick={() => setMobileMenuOpen(false)}>
                   <Link
-                    to="/practice"
+                    to="/admin_problems"
                     className="flex py-2 text-base font-medium text-body-color hover:text-dark lg:ml-12 lg:inline-flex"
                   >
-                    Practice 
-                  </Link>
-                </li>
-                <li onClick={() => setMobileMenuOpen(false)}>
-                  <Link
-                    to="/compiler"
-                    className="flex py-2 text-base font-medium text-body-color hover:text-dark lg:ml-12 lg:inline-flex"
-                  >
-                    compiler
-                  </Link>
-                </li>
-                <li onClick={() => setMobileMenuOpen(false)}>
-                  <Link
-                    to="/cart"
-                    className="flex py-2 text-base font-medium text-body-color hover:text-dark lg:ml-12 lg:inline-flex"
-                  >
-                    Cart
-                  </Link>
-                </li>
-                <li onClick={() => setMobileMenuOpen(false)}>
-                  <Link
-                    to="/documentation"
-                    className="flex py-2 text-base font-medium text-body-color hover:text-dark lg:ml-12 lg:inline-flex"
-                  >
-                    Doc
-                  </Link>
-                </li>
-                <li onClick={() => setMobileMenuOpen(false)}>
-                  <Link
-                    to="/blog"
-                    className="flex py-2 text-base font-medium text-body-color hover:text-dark lg:ml-12 lg:inline-flex"
-                  >
-                    Vlogs
+                    Problems
                   </Link>
                 </li>                
+                <li onClick={() => setMobileMenuOpen(false)}>
+                  <Link
+                    to="/admin_payments"
+                    className="flex py-2 text-base font-medium text-body-color hover:text-dark lg:ml-12 lg:inline-flex"
+                  >
+                    payments
+                  </Link>
+                </li>
+                <li onClick={() => setMobileMenuOpen(false)}>
+                  <Link
+                    to="/admin_users"
+                    className="flex py-2 text-base font-medium text-body-color hover:text-dark lg:ml-12 lg:inline-flex"
+                  >
+                    users
+                  </Link>
+                </li>               
               </ul>
             </nav>
           </div>
 
           <div className="flex justify-end">
-  {user.name ? (
-    <Fragment>
-      <div className="hidden sm:flex justify-end pr-16 lg:pr-0">
-        <button
-          // onClick={logout}
-          className="px-7 py-2 text-base font-medium text-dark hover:text-primary dark:text-black"
-        >
-          {user.name}
-        </button>
-        <Link
-          to="/dashboard"
-          className="flex items-center space-x-2 px-4 py-2 text-base font-medium text-dark hover:text-primary dark:text-black"
-        >
-          <img
-            src={`${process.env.REACT_APP_BASE_URL}${user.profilePhoto}`}
-            alt={`${user.name}'s Profile`}
-            className="w-16 h-16 rounded-full object-cover mb-1 border border-indigo-500"
-          />
-        </Link>
-      </div>
-    </Fragment>
-  ) : (
-    <Fragment>
-      <div className="hidden sm:flex justify-end pr-16 lg:pr-0">
-        <Link
-          to="/login"
-          className="px-7 py-2 text-base font-medium text-dark hover:text-primary dark:text-black"
-        >
-          Login
-        </Link>
-        <Link
-          to="/signup"
-          className="px-7 py-2 text-base font-medium text-dark hover:text-primary dark:text-black"
-        >
-          SignUp
-        </Link>
-      </div>
-    </Fragment>
-  )}
-</div>
-
+            {user.name ? (
+              <Fragment>
+                <div className="hidden sm:flex justify-end pr-16 lg:pr-0">
+                  <button
+                    onClick={logout}
+                    className="px-7 py-2 text-base font-medium text-dark hover:text-primary dark:text-black"
+                  >
+                    Log out
+                  </button>
+                  <Link
+                    to="/dashboard"
+                    className="flex items-center space-x-2 px-4 py-2 text-base font-medium text-dark hover:text-primary dark:text-black"
+                  >
+                    {user.profilePhoto ? (
+                      <img
+                        src={`${process.env.REACT_APP_BASE_URL}${user.profilePhoto}`}
+                        alt="Profile"
+                        className="w-16 h-16 rounded-full object-cover mb-1 border-1 border-indigo-500"
+                      />
+                    ) : (
+                      <span>{user.name}</span> // Ensure consistent display
+                    )}
+                  </Link>
+                </div>
+              </Fragment>
+            ) : (
+              <Fragment>
+                <div className="hidden sm:flex justify-end pr-16 lg:pr-0">
+                  <Link
+                    to="/admin_login"
+                    className="px-7 py-2 text-base font-medium text-dark hover:text-primary dark:text-black"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    to="/admin_signup"
+                    className="px-7 py-2 text-base font-medium text-dark hover:text-primary dark:text-black"
+                  >
+                    SignUp
+                  </Link>
+                </div>
+              </Fragment>
+            )}
+          </div>
         </div>
       </div>
     </header>

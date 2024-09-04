@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 import { LineChart } from "@mui/x-charts/LineChart";
+import { googleLogout } from "@react-oauth/google";
 
 import {
   Card,
@@ -16,7 +17,6 @@ import axios from "axios";
 const authToken = Cookies.get("token");
 
 const Dashboard = () => {
-  
   // profile update
   // const [isPopupOpen, setPopupOpen] = useState(false);
   const [user, setUser] = useState({
@@ -54,8 +54,8 @@ const Dashboard = () => {
       },
     },
   });
-// dashboard pai chart data
-  useEffect(() => {  
+  // dashboard pai chart data
+  useEffect(() => {
     // fetchStatistics();
     getProblemStatistics();
     if (authToken) {
@@ -67,11 +67,14 @@ const Dashboard = () => {
 
   const fetchUserId = async (token) => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/user/verify-token`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.get(
+        `${process.env.REACT_APP_BASE_URL}/user/verify-token`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       setUserId(response.data.userId); // Set userId from response
       fetchStatistics(response.data.userId);
       fetchUser(response.data.userId); // Fetch user data using the userId
@@ -90,8 +93,7 @@ const Dashboard = () => {
       setStatistics(data);
 
       // Assuming data includes easy, medium, and hard counts
-      const { easy_count, medium_count, hard_count, daily_solved_count } =
-        data;
+      const { easy_count, medium_count, hard_count, daily_solved_count } = data;
 
       // Update the chartConfig with the new values
       setChartConfig((prevConfig) => ({
@@ -105,29 +107,31 @@ const Dashboard = () => {
     }
   };
 
-// user details
-const fetchUser = async (id) => {
-  try {
-    const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/profile/userprofile/${id}`);
-    setUser(response.data);
-  } catch (error) {
-    console.error("Error fetching user data:", error);
-  }
-};  
+  // user details
+  const fetchUser = async (id) => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_BASE_URL}/profile/userprofile/${id}`
+      );
+      setUser(response.data);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
 
-// total problems
-const getProblemStatistics = async () => {
-  try {
-    const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/practice/statistics`);
-    const data = response.data;
-     settotal(data);
-    
-  } catch (error) {
-    console.error('Error fetching problem statistics:', error);
-    throw error;
-  }
-};
-
+  // total problems
+  const getProblemStatistics = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_BASE_URL}/practice/statistics`
+      );
+      const data = response.data;
+      settotal(data);
+    } catch (error) {
+      console.error("Error fetching problem statistics:", error);
+      throw error;
+    }
+  };
 
   if (loading) {
     return <div>Loading...</div>;
@@ -155,6 +159,13 @@ const getProblemStatistics = async () => {
 
   const seriesData = months.map((month) => daily_solved_count[month] || 0);
 
+  // logout
+  const logout = () => {
+    Cookies.remove("token");
+    googleLogout();
+    window.location.href = "/login"; // Use window.location.href for consistent behavior
+  };
+
   return (
     <>
       <button
@@ -181,111 +192,120 @@ const getProblemStatistics = async () => {
       </button>
 
       <aside
-  id="default-sidebar"
-  className="fixed top-15 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0"
-  aria-label="Sidebar"
->
-  <div className="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
-    <ul className="space-y-2 font-medium">
-      <div className="flex flex-col items-center justify-center">
-  <div>
-   <Link to="/profile">
-   <img
-              src={`${process.env.REACT_APP_BASE_URL}${user.profilePhoto}`}
-              alt="Profile"
-              className="w-32 h-32 rounded-full object-cover mb-1 border-2 border-indigo-500"
-            />
-   </Link>
-  </div>
+        id="default-sidebar"
+        className="fixed top-15 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0"
+        aria-label="Sidebar"
+      >
+        <div className="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
+          <ul className="space-y-2 font-medium">
+            {user && (
+              <div className="flex flex-col items-center justify-center">
+                <div className="relative">
+                  {/* <Link to="/profile">
+                    <img
+                      src={`${process.env.REACT_APP_BASE_URL}${user.profilePhoto}`}
+                      alt={`${user.name}'s Profile`}
+                      className="w-32 h-32 rounded-full object-cover mb-1 border-2 border-indigo-500"
+                    />
+                  </Link> */}
+                  <Link to="/profile">
+                    <img
+                      src={`${process.env.REACT_APP_BASE_URL}${user.profilePhoto}`}
+                      alt={`${user.name}'s Profile`}
+                      className="w-32 h-32 rounded-full object-cover mb-1 border-2 border-indigo-500"
+                    />
+                    {/* Pencil icon for editing */}
+                    <svg
+                      className="absolute bottom-2 right-2 w-6 h-6 text-gray-800 bg-white p-1 rounded-full shadow"
+                      fill="currentColor"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      aria-hidden="true"
+                    >
+                      <path d="M17.414 2.586a2 2 0 0 0-2.828 0L13.5 3.672l3.828 3.828 1.086-1.086a2 2 0 0 0 0-2.828l-1-1zM12.172 5.828L4 14V16h2l8.172-8.172-2-2z" />
+                    </svg>
+                  </Link>
+                </div>
 
-  <div className="flex flex-col items-center mt-4">
-    <h1 className="text-sm text-gray-100 dark:text-gray-100">{user.name}</h1>
-    <h4 className="text-sm text-gray-100 dark:text-gray-100">{user.email}</h4>
-  </div>
-</div>
+                <div className="flex flex-col items-center mt-4">
+                  <h1 className="text-sm text-gray-100 dark:text-gray-100">
+                    {user.name}
+                  </h1>
+                  <h4 className="text-sm text-gray-100 dark:text-gray-100">
+                    {user.email}
+                  </h4>
+                </div>
+              </div>
+            )}
 
-      <li>
-        <a
-          href="#"
-          className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
-        >
-          <svg
-            className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
-            <path d="m17.418 3.623-.018-.008a6.713 6.713 0 0 0-2.4-.569V2h1a1 1 0 1 0 0-2h-2a1 1 0 0 0-1 1v2H9.89A6.977 6.977 0 0 1 12 8v5h-2V8A5 5 0 1 0 0 8v6a1 1 0 0 0 1 1h8v4a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-4h6a1 1 0 0 0 1-1V8a5 5 0 0 0-2.582-4.377ZM6 12H4a1 1 0 0 1 0-2h2a1 1 0 0 1 0 2Z" />
-          </svg>
-          <span className="flex-1 ms-3 whitespace-nowrap">
-            Notification
-          </span>
-          <span className="inline-flex items-center justify-center w-3 h-3 p-3 ms-3 text-sm font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">
-            3
-          </span>
-        </a>
-      </li>
+            <li>
+              <Link
+                to="/notifications"
+                className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+              >
+                <svg
+                  className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path d="m17.418 3.623-.018-.008a6.713 6.713 0 0 0-2.4-.569V2h1a1 1 0 1 0 0-2h-2a1 1 0 0 0-1 1v2H9.89A6.977 6.977 0 0 1 12 8v5h-2V8A5 5 0 1 0 0 8v6a1 1 0 0 0 1 1h8v4a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-4h6a1 1 0 0 0 1-1V8a5 5 0 0 0-2.582-4.377ZM6 12H4a1 1 0 0 1 0-2h2a1 1 0 0 1 0 2Z" />
+                </svg>
+                <span className="flex-1 ms-3 whitespace-nowrap">
+                  Notification
+                </span>
+                <span className="inline-flex items-center justify-center w-3 h-3 p-3 ms-3 text-sm font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">
+                  3
+                </span>
+              </Link>
+            </li>
 
-      <li>
-        <a
-          href="#"
-          className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
-        >
-          <svg
-            className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="currentColor"
-            viewBox="0 0 18 20"
-          >
-            <path d="M17 5.923A1 1 0 0 0 16 5h-3V4a4 4 0 1 0-8 0v1H2a1 1 0 0 0-1 .923L.086 17.057A2 2 0 0 0 2 19h14a2 2 0 0 0 1.914-1.943ZM6 4a2 2 0 0 1 4 0v1H6Zm2 12a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3ZM3.2 11a.8.8 0 0 1-.8.8H2.8a.8.8 0 1 1 0-1.6h-.4a.8.8 0 0 1 .8.8Z" />
-          </svg>
-          <span className="flex-1 ms-3 whitespace-nowrap">My Course</span>
-        </a>
-      </li>
+            <li>
+              <Link
+                to="/my-courses"
+                className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+              >
+                <svg
+                  className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                  viewBox="0 0 18 20"
+                >
+                  <path d="M17 5.923A1 1 0 0 0 16 5h-3V4a4 4 0 1 0-8 0v1H2a1 1 0 0 0-1 .923L.086 17.057A2 2 0 0 0 2 19h14a2 2 0 0 0 1.914-1.943ZM6 4a2 2 0 0 1 4 0v1H6Zm2 12a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3ZM3.2 11a.8.8 0 0 1-.8.8H2.8a.8.8 0 1 1 0-1.6h-.4a.8.8 0 0 1 .8.8Z" />
+                </svg>
+                <span className="flex-1 ms-3 whitespace-nowrap">My Course</span>
+              </Link>
+            </li>
 
-      <li>
-        <a
-          href="#"
-          className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
-        >
-          <svg
-            className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
-            <path d="m17.418 3.623-.018-.008a6.713 6.713 0 0 0-2.4-.569V2h1a1 1 0 1 0 0-2h-2a1 1 0 0 0-1 1v2H9.89A6.977 6.977 0 0 1 12 8v5h-2V8A5 5 0 1 0 0 8v6a1 1 0 0 0 1 1h8v4a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-4h6a1 1 0 0 0 1-1V8a5 5 0 0 0-2.582-4.377ZM6 12H4a1 1 0 0 1 0-2h2a1 1 0 0 1 0 2Z" />
-          </svg>
-          <span className="flex-1 ms-3 whitespace-nowrap">Action</span>
-        </a>
-      </li>
-
-      <li>
-        <a
-          href="#"
-          className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
-        >
-          <svg
-            className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
-            <path d="M5 5V.13a2.96 2.96 0 0 0-1.293.749L.879 3.707A2.96 2.96 0 0 0 .13 5H5Z" />
-            <path d="M6.737 11.061a2.961 2.961 0 0 1 .81-1.515l6.117-6.116A4.839 4.839 0 0 1 16 2.141V2a1.97 1.97 0 0 0-1.933-2H7v5a2 2 0 0 1-2 2H0v11a1.969 1.969 0 0 0 1.933 2h12.134A1.97 1.97 0 0 0 16 18v-3.093l-1.546 1.546c-.413.413-.94.695-1.513.81l-3.4.679a2.947 2.947 0 0 1-1.85-.227 2.96 2.96 0 0 1-1.635-3.257l.681-3.397Z" />
-            <path d="M8.961 16a.93.93 0 0 0 .189-.019l3.4-.679a.961.961 0 0 0 .49-.263l6.118-6.117a2.884 2.884 0 0 0-4.079-4.078l-6.117 6.117a.96.96 0 0 0-.263.491l-.679 3.4A.961.961 0 0 0 8.961 16Zm7.477-9.8a.958.958 0 0 1 .68-.281.961.961 0 0 1 .682 1.644l-.315.315-1.36-1.36.313-.318Zm-5.911 5.911 4.236-4.236 1.359 1.359-4.236 4.237-1.7.339.341-1.699Z" />
-          </svg>
-          <span className="flex-1 ms-3 whitespace-nowrap">Sign out</span>
-        </a>
-      </li>
-    </ul>
-  </div>
-  {/* <UpdateProfilePopup isOpen={isPopupOpen} onClose={handleClosePopup} /> */}
-</aside>
+            <li>
+              <a
+                href="#"
+                className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+              >
+                <svg
+                  className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M5 5V.13a2.96 2.96 0 0 0-1.293.749L.879 3.707A2.96 2.96 0 0 0 .13 5H5Z" />
+                  <path d="M6.737 11.061a2.961 2.961 0 0 1 .81-1.515l6.117-6.116A4.839 4.839 0 0 1 16 2.141V2a1.97 1.97 0 0 0-1.933-2H7v5a2 2 0 0 1-2 2H0v11a1.969 1.969 0 0 0 1.933 2h12.134A1.97 1.97 0 0 0 16 18v-3.093l-1.546 1.546c-.413.413-.94.695-1.513.81l-3.4.679a2.947 2.947 0 0 1-1.85-.227 2.96 2.96 0 0 1-1.635-3.257l.681-3.397Z" />
+                  <path d="M8.961 16a.93.93 0 0 0 .189-.019l3.4-.679a.961.961 0 0 0 .49-.263l6.118-6.117a2.884 2.884 0 0 0-4.079-4.078l-6.117 6.117a.96.96 0 0 0-.263.491l-.679 3.4A.961.961 0 0 0 8.961 16Zm7.477-9.8a.958.958 0 0 1 .68-.281.961.961 0 0 1 .682 1.644l-.315.315-1.36-1.36.313-.318Zm-5.911 5.911 4.236-4.236 1.359 1.359-4.236 4.237-1.7.339.341-1.699Z" />
+                </svg>
+                <button
+                  className="flex-2 ms-3 whitespace-nowrap"
+                  onClick={logout}
+                >
+                  Sign out
+                </button>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </aside>
 
       <div className="p-4 sm:ml-64">
         <div className="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700">
@@ -298,28 +318,30 @@ const getProblemStatistics = async () => {
                   </div>
                 </CardBody>
                 <CardFooter className="flex justify-center">
-                <div className="grid grid-cols-3 gap-1">
-                  <button className="bg-transparent hover:bg-green-700 text-green-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded mr-2 pr-10 pl-10">
-                    Easy
-                    <div className="text-blue-900 ">
-                      {statistics.easy_count}/{total ? total.easy : "Loading..."}
-                    </div>
-                  </button>
-                  <button className="bg-transparent hover:bg-yellow-400 text-yellow-400 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded pr-10 pl-10">
-                    Medium
-                    <div className="text-blue-900 ">
-                      {statistics.medium_count}/{total ? total.medium : "Loading..."}
-                    </div>
-                  </button>
-                  <button className="bg-transparent hover:bg-red-500 text-red-600 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded ml-2 pr-10 pl-10">
-                    Hard
-                    <div className="text-blue-900 ">
-                      {statistics.hard_count}/{total ? total.hard : "Loading..."}
-                    </div>
-                  </button>
-                </div>
-              </CardFooter>
-
+                  <div className="grid grid-cols-3 gap-1">
+                    <button className="bg-transparent hover:bg-green-700 text-green-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded mr-2 pr-10 pl-10">
+                      Easy
+                      <div className="text-blue-900 ">
+                        {statistics.easy_count}/
+                        {total ? total.easy : "Loading..."}
+                      </div>
+                    </button>
+                    <button className="bg-transparent hover:bg-yellow-400 text-yellow-400 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded pr-10 pl-10">
+                      Medium
+                      <div className="text-blue-900 ">
+                        {statistics.medium_count}/
+                        {total ? total.medium : "Loading..."}
+                      </div>
+                    </button>
+                    <button className="bg-transparent hover:bg-red-500 text-red-600 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded ml-2 pr-10 pl-10">
+                      Hard
+                      <div className="text-blue-900 ">
+                        {statistics.hard_count}/
+                        {total ? total.hard : "Loading..."}
+                      </div>
+                    </button>
+                  </div>
+                </CardFooter>
               </Card>
             </div>
             <div className="flex flex-col items-center">

@@ -1,111 +1,103 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { useParams } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
+import Cookies from 'js-cookie';
 
 const CourseDetail = () => {
-  const [courseDetail, setCourseDetail] = useState(null); 
-  const { id } = useParams();
-  const courseId = id;
+  const { id } = useParams(); // Retrieve the course ID from the URL
+  const [course, setCourse] = useState(null);
+  const [userId, setUserId] = useState(null);
+  const authToken = Cookies.get("token"); // Retrieve token from cookies
 
   useEffect(() => {
-    const fetchCourseDetail = async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.PORT}/course/course-detail/${courseId}`
-        );
-        setCourseDetail(response.data);
-      } catch (error) {
-        console.error("Error fetching course detail:", error);
+    // Fetch course details based on course ID from the URL
+    if (id) {
+      fetchCourseDetails(id);
+    }
+    
+    if (authToken) {
+      fetchUserId(authToken);
+    } else {
+      console.error("No auth token found");
+    }
+  }, [id, authToken]);
+
+  // Fetch course details by course ID
+  const fetchCourseDetails = async (courseId) => {
+    try {
+      const res = await axios.get(`${process.env.REACT_APP_BASE_URL}/courses/course-detail/${courseId}`);
+      setCourse(res.data);
+    } catch (error) {
+      console.error("Error fetching course details:", error);
+    }
+  };
+
+  // Fetch user ID
+  const fetchUserId = async (token) => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/user/verify-token`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setUserId(response.data.userId); // Set userId from response      
+    } catch (error) {
+      console.error("Failed to fetch user ID:", error);
+    }
+  };
+
+  // Add course to cart
+  const addToCart = async () => {
+    if (!userId) {
+      alert("User not authenticated");
+      return;
+    }
+    
+    if (!course) {
+      console.error("Course data is not available");
+      return;
+    }
+    
+    try {
+      const res = await axios.post(`${process.env.REACT_APP_BASE_URL}/cart/cart/${course._id}`, {
+        userId: userId, // Include userId in the request body
+      });
+      if (res.status === 201) {
+        alert("Course added to cart");
       }
-    };
+    } catch (e) {
+      console.error("An error occurred:", e);
+    }
+  };
 
-    fetchCourseDetail();
-  }, [courseId]);
-
- 
-  if (!courseDetail) {
-    return <div>Loading...</div>;
-  }
+  if (!course) return <p>Loading...</p>;
 
   return (
-    <div className="bg-gray-100 min-h-screen p-8">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6 text-gray-800">
-          {courseDetail.courseName}
-        </h1>
-        <div className="flex flex-wrap -mx-4">
-          <div className="lg:w-1/2 md:w-full px-4 mb-8 md:mb-0">
-            <h2 className="text-xl font-semibold mb-2 text-gray-800">
-              Overview
-            </h2>
-            <p className="text-gray-600">{courseDetail.overview}</p>
-          </div>
-          <div className="lg:w-1/2 md:w-full px-4 mb-8 md:mb-0">
-            <h2 className="text-xl font-semibold mb-2 text-gray-800">
-              Objectives
-            </h2>
-            <ul className="list-disc list-inside text-gray-600">
-              {courseDetail.objectives.map((objective, index) => (
-                <li key={index}>{objective}</li>
-              ))}
-            </ul>
-          </div>
-          <div className="lg:w-1/2 md:w-full px-4 mb-8 md:mb-0">
-            <h2 className="text-xl font-semibold mb-2 text-gray-800">
-              Prerequisites
-            </h2>
-            <ul className="list-disc list-inside text-gray-600">
-              {courseDetail.prerequisites.map((prerequisite, index) => (
-                <li key={index}>{prerequisite}</li>
-              ))}
-            </ul>
-          </div>
-          <div className="lg:w-1/2 md:w-full px-4 mb-8 md:mb-0">
-            <h2 className="text-xl font-semibold mb-2 text-gray-800">
-              Syllabus
-            </h2>
-            <ul className="list-disc list-inside text-gray-600">
-              {courseDetail.syllabus.map((topic, index) => (
-                <li key={index}>{topic}</li>
-              ))}
-            </ul>
-          </div>
-          <div className="lg:w-1/3 md:w-full px-4 mb-8 md:mb-0">
-            <h2 className="text-xl font-semibold mb-2 text-gray-800">
-              Instructor
-            </h2>
-            <div className="flex items-center mb-4">
-              <img
-                src={courseDetail.instructor.image}
-                alt="Instructor"
-                className="w-16 h-16 object-cover rounded-full mr-4"
-              />
-              <div>
-                <p className="text-gray-800">{courseDetail.instructor.name}</p>
-                <p className="text-gray-600">{courseDetail.instructor.bio}</p>
-              </div>
-            </div>
-          </div>
-          <div className="lg:w-2/3 md:w-full px-4 mb-8 md:mb-0">
-            <h2 className="text-xl font-semibold mb-2 text-gray-800">
-              Reviews
-            </h2>
-            <ul>
-              {courseDetail.reviews.map((review, index) => (
-                <li key={index} className="mb-4">
-                  <div className="flex items-center mb-2">
-                    <p className="text-gray-800 mr-2">{review.username}</p>
-                    <p className="text-gray-600">{review.rating}</p>
-                  </div>
-                  <p className="text-gray-600">{review.comment}</p>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
+    <div className="flex flex-col md:flex-row h-screen bg-gray-100">
+      {/* Image Section */}
+      <div className="flex-none w-full md:w-1/2 bg-gray-200 overflow-hidden flex items-center justify-center p-4">
+        <img
+          src={course.img}
+          alt={course.course_name}
+          className="max-w-full max-h-96 object-cover transform hover:scale-105 transition-transform duration-500 ease-in-out"
+        />
+      </div>
+
+      {/* Details Section */}
+      <div className="flex-1 p-8 flex flex-col justify-center bg-white shadow-lg rounded-lg md:rounded-l-lg">
+        <h1 className="text-4xl font-bold mb-4 text-gray-800">{course.course_name}</h1>
+        <p className="text-2xl font-semibold text-green-600 mb-4">Price: Rs.{course.course_price}</p>
+        <p className="text-lg text-gray-700 mb-6">{course.course_disc}</p>
+        <button
+          onClick={addToCart}
+          className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors duration-300 ease-in-out"
+        >
+          Add to Cart
+        </button>
       </div>
     </div>
   );
 };
 
 export default CourseDetail;
+ 

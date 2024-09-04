@@ -8,6 +8,7 @@ const authToken = Cookies.get("token");
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
   const [userId, setUserId] = useState(null);
+  const [paymentMethod, setPaymentMethod] = useState('Credit Card'); 
 
 
   useEffect(() => {
@@ -32,10 +33,6 @@ const Cart = () => {
       console.error("Failed to fetch user ID:", error);
     }
   };
-
-
-
-
 
   // fetch all cart items
 
@@ -64,6 +61,8 @@ const Cart = () => {
     }
   };
 
+
+// stripe payment 
   const stripePromise = loadStripe(process.env.REACT_APP_LOADSTRIPE)
 
   const makePayment = async () => {
@@ -85,6 +84,9 @@ const Cart = () => {
 
       if (error) {
         console.error("Stripe Checkout error:", error);
+      }else{
+        await savePaymentDetails(validCartItems, response.data.transactionId);
+        console.log(savePaymentDetails);
       }
     } catch (error) {
       console.error("Payment error:", error);
@@ -100,6 +102,27 @@ const Cart = () => {
       }
     }
   };
+
+// Save payment details in the backend
+const savePaymentDetails = async (cartItems, transactionId) => {
+  try {
+    await axios.post(`${process.env.REACT_APP_BASE_URL}/payment/payments`, {
+      userId,
+      courseId: cartItems.map(item => item.courseId._id),
+      amount: cartItems.reduce((sum, item) => sum + item.courseId.course_price, 0),
+      paymentMethod,
+      transactionId,
+    }, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      }
+    });
+    console.log("Payment details saved successfully");
+  } catch (error) {
+    console.error("Failed to save payment details:", error);
+  }
+};
+
 
   return (
     <div className="cart">

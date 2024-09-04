@@ -3,6 +3,7 @@ const Course = require("../models/course");
 const CourseDetail = require("../models/courseDetail");
 const router = express.Router();
 
+// add new course
 router.post("/add-course", async (req, res) => {
   try {
     const { img, course_name, course_disc, course_price } = req.body;
@@ -14,6 +15,7 @@ router.post("/add-course", async (req, res) => {
   }
 });
 
+// updare a course
 router.put("/updatecourse/:id", async (req, res) => {
   try {
     const id = req.params.id;
@@ -24,6 +26,7 @@ router.put("/updatecourse/:id", async (req, res) => {
   }
 });
 
+// delete specific course
 router.delete("/deletecourse/:id", async (req, res) => {
   try {
     const id = req.params.id;
@@ -34,6 +37,7 @@ router.delete("/deletecourse/:id", async (req, res) => {
   }
 });
 
+// show all course
 router.get("/readallcourses", async (req, res) => {
   try {
     const courses = await Course.find({});
@@ -44,16 +48,21 @@ router.get("/readallcourses", async (req, res) => {
   }
 });
 
-router.get("/course-detail/:id", async (req, res) => {
+// show a specific course
+
+router.get('/course-detail/:id', async (req, res) => {
   try {
     const courseId = req.params.id;
-    const courseDetail = await CourseDetail.findOne({ courseId });
-    if (!courseDetail) {
-      return res.status(404).send("Course detail not found");
+    const course = await Course.findById(courseId);
+
+    if (!course) {
+      return res.status(404).json({ message: 'Course not found' });
     }
-    res.send(courseDetail);
-  } catch (e) {
-    res.status(500).send(e.message);
+
+    res.json(course);
+  } catch (error) {
+    console.error("Error fetching course details:", error);
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
