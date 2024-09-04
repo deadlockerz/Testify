@@ -30,8 +30,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {    
-    "start": "webpack serve --host 0.0.0.0 --public https://testify-uanx.onrender.com",
-
+    "start": "react-scripts start",
     "build": "react-scripts build"
   },
   "eslintConfig": {
