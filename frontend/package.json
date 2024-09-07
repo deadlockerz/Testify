@@ -30,7 +30,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "node --max-old-space-size=4096 node_modules/.bin/react-scripts start",
+    "sstart": "react-scripts start",
     "build": "react-scripts build"
   },
   "eslintConfig": {

@@ -15,7 +15,7 @@ const BlogPage = () => {
       } catch (error) {
         console.error('Error fetching blogs:', error);
       }
-    };
+    }; 
 
     fetchBlogs();
   }, []);

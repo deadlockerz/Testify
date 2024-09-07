@@ -23,11 +23,11 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import App from "../App";
 
 // const Router = () => {
-  const router = createBrowserRouter(
+  const router = createBrowserRouter( 
     [{
       path: "/",
       element: <App />,
-      errorElement: <Error />,
+      errorElement: <Error />, 
       children: [
         {
           path: "/",
