@@ -1,6 +1,6 @@
 # Testify - An Ed-tech Website
 
-## WEBSITE LINK: https://testify-gray.vercel.app/
+## WEBSITE LINK: https://testify-coral.vercel.app/
 
 ## Getting Started with Create React App:
 
