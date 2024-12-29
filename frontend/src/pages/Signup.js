@@ -69,7 +69,7 @@ function SignupForm() {
   // };
 
 // email otp
-const sendOTP = async () => {
+const emailOTP = async () => {
   const email = inputUser.email;
   // console.log(email);
   try {
@@ -210,8 +210,8 @@ const sendOTP = async () => {
             <button
               type="button"
               className="mt-3 tracking-wide font-semibold bg-indigo-500 text-gray-100 w-full py-4 rounded-r hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
-              onClick={sendOTP}
-              // onClick={emailOTP}
+              // onClick={sendOTP}
+              onClick={emailOTP}
             >
               Send OTP
             </button>
