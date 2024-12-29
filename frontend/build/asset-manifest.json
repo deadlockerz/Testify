@@ -1,0 +1,20 @@
+{
+  "files": {
+    "main.css": "/static/css/main.95917755.css",
+    "main.js": "/static/js/main.9e589c27.js",
+    "static/media/textvideo1.mp4": "/static/media/textvideo1.58de3a32ff8216f23e36.mp4",
+    "static/media/herovideo.mp4": "/static/media/herovideo.ab34fee4ee445793f3f8.mp4",
+    "static/media/codechef.png": "/static/media/codechef.622482415cde63b659bd.png",
+    "static/media/leetcode.png": "/static/media/leetcode.e9a0b0241687e44c8baa.png",
+    "static/media/gfg.png": "/static/media/gfg.d12ab2f41afb04efdaa9.png",
+    "static/media/github.png": "/static/media/github.0c1c229f100187f70c3f.png",
+    "static/media/w3w.png": "/static/media/w3w.b9b2af17c791c98a2469.png",
+    "index.html": "/index.html",
+    "main.95917755.css.map": "/static/css/main.95917755.css.map",
+    "main.9e589c27.js.map": "/static/js/main.9e589c27.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.95917755.css",
+    "static/js/main.9e589c27.js"
+  ]
+}

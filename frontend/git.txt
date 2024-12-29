@@ -1,0 +1,59 @@
+ls
+cd\ -> to go back
+clear / cls
+mkdir -> to make directory
+
+
+---setup normal local -----
+git -v
+git init 
+git remote add origin <ssh/http>--->> make a new ssh in github new repo
+git branch -M main  --> 'M' is move
+git add .
+git commit -m "episode-1"
+git status
+git push origin main 
+git push -f origin main --> Force Push
+
+
+
+
+
+
+---Git Cloning -----
+git clone <ssh/http> ---> for cloning files from github to local
+
+
+
+---Git Updating till remote Repo -----
+git pull origin main -> To update your local repository with the new changes if someone pushes his changes to the main branch on the remote repository.
+
+
+
+---Git Status -----
+1.U: Untracked/new files that git doesn't yet track
+2.M: changed/Modified
+3.staged: file is ready to be committed, after add cmd it shows
+4.Unmodified: unchanged, after commit it shows this
+
+
+
+
+---Git Reset-----
+git log ---> all commit history for exit --->'q'
+git reset HEAD~1 ---> back commit as Head is pointed to latest commit
+git reset --hard HEAD~1 ---> Same but remove everything which is unrelated to previous commit
+git reset <commit hash> --->You can then decide whether to commit, discard, or modify these changes further. 
+git reset --hard commit hash ---> (It will remove all the modified changes)
+
+
+---Git Ignore File-----
+.gitignore --> We doesn't need to put push this in 'Git' as we can recover node packages from package.json using 'npm install'.
+
+---------Remove running git 'add' process----------
+rm .git/index.lock
+
+
+---Remove Git Remote-----
+git remote -v  --> check connected remote
+git remote remove origin
